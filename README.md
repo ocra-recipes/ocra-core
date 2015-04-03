@@ -1,5 +1,5 @@
-## O.C.R.A.
-### Optimization-based Control for Robotics Applications
+### O.C.R.A.
+#### Optimization-based Control for Robotics Applications
 
 Give a description...
 
@@ -7,7 +7,7 @@ Give a description...
 
 Give a description...
 
-## Code Structure
+### Code Structure
 Give a description...
 
 - core-framework
@@ -15,11 +15,11 @@ Give a description...
   - wocra
   - quadprog
 
-## core-framework
+### core-framework
 
 Give a description...
 
-## wLQP-Control
+### wLQP-Control
 
 Give a description...
 
@@ -27,13 +27,13 @@ Give a description...
 
 Give a description...
 
-## Tested OS's
+### Tested OS's
 
 - [x] Ubuntu 12.04
 
 So far we have only tried OCRA on Ubuntu 12.04 but in theory any linux distro should work if the dependencies are met and don't conflict with any system libs/headers. If you manage to build, install and use OCRA in any other platform please let us know and we can add it to the list with any helpful notes you provide along with it.
 
-## Dependencies
+### Dependencies
 
 `ocra-core` depends on Eigen 3.0 and its unsupported template library LGSM. If you are in linux and have `apt-get` you can install via:
 ```
@@ -56,13 +56,13 @@ please add `-I/usr/include/eigen3/unsupported` as above. Now that the Cflags are
 
 That is it for the dependencies! Hooray!
 
-### Some notes on Eigen 3.2
+#### Some notes on Eigen 3.2
 
-Unfortunately `ocra-core` is incompatible with the current version, 3.2+, of Eigen. Specifically, the biggest issue is the use of <Ref> for passing Eigen objects as function arguments. Usage of <Ref> in any code linking to the `ocra-core` libs will break your build. As you can imagine this is somewhat of a sore point for us since we can't use all of the neat toys in Eigen 3.2+ but we are working on upgrading `ocra-core`. However, this process will be long so have patience grasshopper.  
+Unfortunately `ocra-core` is incompatible with the current version, 3.2+, of Eigen. Specifically, the biggest issue is the use of `<Ref>` for passing Eigen objects as function arguments. Usage of `<Ref>` in any code linking to the `ocra-core` libs will break your build. As you can imagine this is somewhat of a sore point for us since we can't use all of the neat toys in Eigen 3.2+ but we are working on upgrading `ocra-core`. However, this process will be long so have patience grasshopper.  
 
-## Build & Install
+### Build & Install
 **WARNING**
-*This is an experimental set of libs and there are no guarantees that they will not kill your computer. We take no responsability for what happens if you install them. That being said, if you follow these instructions you should be fine.*
+*This is an experimental set of libs and there are no guarantees that they will not do damage to your computer. We take no responsability for what happens if you install them. That being said, if you follow these instructions you should be fine.*
 
 Okay that's out of the way... phew!
 
@@ -100,7 +100,7 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/bob/ocra-install-dir/lib/pkgconfig
 ```
 Rememeber unless your name is bob, make sure to change the user name (and any other directory names) in the path. Press `ctrl + x`, answer `Y` to accept the changes and `enter`.
 
-Now we have to source the .bashrc file to update the environment variables
+Now we have to source the .bashrc file to update the environment variables.
 ```
 $ source ~/.bashrc
 ```
@@ -130,11 +130,11 @@ $ make install
 
 And we are finished! See? That wasn't so bad. 
 
-## Enjoying your OCRA...
+### Enjoying your OCRA...
 Well now that you have `ocra-core` up and running, you probably want to try it out n'est pas? Well mosey on over to the ocra-wbi-plugins repo and follow the instructions. 
 
 Want to contribute? Maybe build a plugin or two? Read section ??? for details on how to interface with OCRA and use it for world domination.
 
-## Contributing
+### Contributing
 
 Give a description...
