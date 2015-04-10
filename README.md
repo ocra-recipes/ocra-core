@@ -35,11 +35,11 @@ So far we have only tried OCRA on Ubuntu 12.04 but in theory any linux distro sh
 
 ### Dependencies
 
-`ocra-core` depends on Eigen 3.0 and its unsupported template library LGSM. If you are in linux and have `apt-get` you can install via:
+`ocra-core` depends on Boost along with Eigen 3.0 and its unsupported template library LGSM. If you are in linux and have `apt-get` you can install via:
 ```
-$ sudo apt-get install libeigen3-dev
+$ sudo apt-get install libboost-dev libeigen3-dev
 ```
-Please make sure that the version installed is <=3.0.5 otherwise you will not be able to build the ocra-core libs. Once you have Eigen installed we have to make sure that PkgConfig will be able to find the "unsupported" headers. To do this, we have to modify the eigen3 package configuration file.
+Please make sure that the Eigen version installed is <=3.0.5 otherwise you will not be able to build the ocra-core libs. Once you have Eigen installed we have to make sure that PkgConfig will be able to find the "unsupported" headers. To do this, we have to modify the eigen3 package configuration file.
 
 ```
 $ sudo nano /usr/share/pkgconfig/eigen3.pc
@@ -96,7 +96,9 @@ $ nano ~/.bashrc
 ```
 We are now in the nano text editor. Scroll down to the bottom and write the following line:
 ```
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/bob/ocra-install-dir/lib/pkgconfig
+export OCRA_INSTALL=/home/bob/ocra-install-dir
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:${OCRA_INSTALL}/lib/pkgconfig
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${OCRA_INSTALL}/lib
 ```
 Rememeber unless your name is bob, make sure to change the user name (and any other directory names) in the path. Press `ctrl + x`, answer `Y` to accept the changes and `enter`.
 
