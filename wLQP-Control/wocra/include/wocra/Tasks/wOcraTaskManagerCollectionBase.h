@@ -11,6 +11,7 @@
 #include "wocra/Tasks/Managers/wOcraSegCartesianTaskManager.h"
 #include "wocra/Tasks/Managers/wOcraSegOrientationTaskManager.h"
 #include "wocra/Tasks/Managers/wOcraSegPoseTaskManager.h"
+#include "wocra/Tasks/Managers/wOcraVariableWeightsTaskManager.h"
 
 #include "wocra/Models/wOcraModel.h"
 
