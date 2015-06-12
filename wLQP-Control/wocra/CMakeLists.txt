@@ -31,6 +31,15 @@ if(NOT PC_EIGEN_FOUND)
     message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
 endif(NOT PC_EIGEN_FOUND)
 
+#set installation
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX /usr/local/)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+install(DIRECTORY include/ DESTINATION include/ )
+
+
+
 
 add_subdirectory(pkg-config)
 add_subdirectory(include)
