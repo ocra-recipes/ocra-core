@@ -89,8 +89,6 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     feat = new ocra::PositionFeature(name + ".PositionFeature", *featFrame, axes);
     featDes = new ocra::PositionFeature(name + ".PositionFeature_Des", *featDesFrame, axes);
 
-         
-
     task = &(ctrl.createwOcraTask(name, *feat, *featDes));
     task->initAsAccelerationTask();
     ctrl.addTask(*task);
@@ -99,6 +97,7 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     task->setStiffness(_stiffness);
     task->setDamping(_damping);
     task->setWeight(_weight);
+
 
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
@@ -111,6 +110,7 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
 void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position)
 {
     setState(position, Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
+
 }
 
 /** Sets the position, linear velocity and linear acceleration for the task
@@ -124,6 +124,7 @@ void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position, con
     featDesFrame->setPosition(Eigen::Displacementd(position));
     featDesFrame->setVelocity(Eigen::Twistd(0.0, 0.0, 0.0, velocity(0), velocity(1), velocity(2)) );
     featDesFrame->setAcceleration(Eigen::Twistd(0.0, 0.0, 0.0, acceleration(0), acceleration(1), acceleration(2)) );
+
 }
 
 
@@ -138,7 +139,7 @@ void wOcraSegCartesianTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraSegCartesianTaskManager::getWeight()
 {

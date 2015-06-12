@@ -4,6 +4,8 @@
 #include "ocra/control/Model.h"
 #include "ocra/control/FullState.h"
 
+#include <iostream>
+
 using namespace Eigen;
 
 namespace ocra
@@ -62,6 +64,7 @@ namespace ocra
     : Feature(name)
     , pimpl(new Pimpl(frame, axes))
   {
+    
   }
 
   const MatrixXd& PositionFeature::getSpaceTransform() const

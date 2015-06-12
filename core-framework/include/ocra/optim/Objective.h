@@ -21,6 +21,7 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_base_of.hpp>
+#include "ocra/optim/SquaredLinearFunction.h"
 
 namespace ocra
 {
@@ -99,6 +100,7 @@ namespace ocra
 
     double getWeight() const;
     void   setWeight(double weight);
+    // void changeWeight(const Eigen::VectorXd& weight);
 
   protected:
     Function& _function;  //< the function on which the constaint is built
@@ -128,7 +130,13 @@ namespace ocra
     _weight = weight;
   }
 
+  // inline void Objective<SquaredLinearFunction>::changeWeight(const Eigen::VectorXd& weight)
+  // {
+  //   _function.changeWeight(weight);
+  // }
+  
 }
+
 
 
 #include "ocra/optim/LinearFunction.h"

@@ -23,26 +23,6 @@ else()
 endif()
 
 
-##### DEFINE FUNCTION TO GET REQUIRED LIB WITH SAME BUILD TYPE IF POSSIBLE #####
-function(get_package_with_same_build_type PACKAGE_ALIAS package_name)
-
-IF(CMAKE_BUILD_TYPE MATCHES Debug)
-    PKG_CHECK_MODULES(${PACKAGE_ALIAS} ${package_name}_dbg)
-    if(NOT ${PACKAGE_ALIAS}_FOUND)
-        message("Cannot detect debug version of ${package_name}, check release version..." )
-        PKG_CHECK_MODULES(${PACKAGE_ALIAS} ${package_name} REQUIRED)
-    endif()
-ELSE()
-        PKG_CHECK_MODULES(${PACKAGE_ALIAS} ${package_name} REQUIRED)
-ENDIF()
-
-if(NOT ${PACKAGE_ALIAS}_FOUND)
-    message("Failed to detect ${package_name}, check PKG_CONFIG_PATH." )
-endif()
-
-endfunction()
-
-
 # Check dependencies
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED)
@@ -51,8 +31,6 @@ if(NOT PC_EIGEN_FOUND)
     message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
 endif(NOT PC_EIGEN_FOUND)
 
-get_package_with_same_build_type(PC_QUADPROG quadprog)
-get_package_with_same_build_type(PC_OCRA_FRAMEWORK ocra_framework)
 
 add_subdirectory(pkg-config)
 add_subdirectory(include)

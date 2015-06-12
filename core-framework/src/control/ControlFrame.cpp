@@ -1,6 +1,7 @@
 #include "ControlFrame.h"
 
 #include "ocra/control/Model.h"
+#include <iostream>
 
 namespace ocra
 {

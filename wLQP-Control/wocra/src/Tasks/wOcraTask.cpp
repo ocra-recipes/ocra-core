@@ -144,7 +144,7 @@ struct wOcraTask::Pimpl
 
     void connectFunctionnWithObjectiveAndConstraint()
     {
-        innerTaskAsObjective = new Objective<SquaredLinearFunction>(new SquaredLinearFunction(innerObjectiveFunction), weight); // Here, it will manage the SquaredLinearFunction build on a pointer of the function.
+        innerTaskAsObjective = new Objective<SquaredLinearFunction>(new SquaredLinearFunction(innerObjectiveFunction));//, weight); // Here, it will manage the SquaredLinearFunction build on a pointer of the function.
         innerTaskAsConstraint.set(innerObjectiveFunction);      // As as ConstraintPtr, it will manage the new created function innerObjectiveFunction
     }
 };
@@ -469,7 +469,9 @@ void wOcraTask::doSetWeight()
     if (pimpl->innerTaskAsObjective)
     {
         pimpl->innerTaskAsObjective->setWeight(pimpl->weight);
+        // pimpl->innerTaskAsObjective->changeWeight(pimpl->weight);  
     }
+    
 
 }
 
@@ -510,8 +512,6 @@ void wOcraTask::update()
         }
     }
 }
-
-
 
 
 /** Update linear function of the task for the full formalism.

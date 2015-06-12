@@ -113,6 +113,7 @@ void OneLevelSolverWithQuadProg::updateObjectiveEquations()
 
         ocra::QuadraticFunction& obj     = _objectives[i]->getFunction();
         double weight                   = _objectives[i]->getWeight();
+
         const std::vector<int>& objMap  = findMapping(obj.getVariable());
 
         ocra::utils::addCompressed2d(   obj.getPi(), _C, objMap, weight);

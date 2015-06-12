@@ -1,6 +1,6 @@
 ##### Make library
 INCLUDE_DIRECTORIES(
-	${CMAKE_SOURCE_DIR}/include
+	${PROJECT_SOURCE_DIR}/include
 	${PC_EIGEN_INCLUDE_DIRS}
 	)
 
@@ -13,5 +13,3 @@ install(
     TARGETS quadprog${suffix_type}
     ${install_type} DESTINATION lib
 )
-
-

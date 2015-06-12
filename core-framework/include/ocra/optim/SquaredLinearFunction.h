@@ -50,6 +50,8 @@ namespace ocra
     ~SquaredLinearFunction();
 
     void changeWeight(const VectorXd& weight);
+    //void setWeight(const VectorXd& weight);
+
     LinearFunction& getFunction();
     const LinearFunction& getFunction() const;
 

@@ -36,6 +36,13 @@ namespace ocra
     _weight = weight;
   }
 
+  // void SquaredLinearFunction::setWeight(const VectorXd& weight)
+  // {
+  //   if(weight.size() != _f->getDimension())
+  //     throw std::runtime_error("[SquaredLinearFunction::changeWeight] weight has not the appropriate size");
+  //   _weight = weight;
+  // }
+
 
   LinearFunction& SquaredLinearFunction::getFunction()
   {
@@ -57,6 +64,7 @@ namespace ocra
 
   void SquaredLinearFunction::updateq() const
   {
+    // std::cout << "updateQ in SquaredLinearFunction\n"<< _weight.transpose() << std::endl;
     *_q[0] = _f->getA().transpose()*_weight.asDiagonal()*_f->getb();
   }
 
