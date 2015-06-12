@@ -25,11 +25,16 @@ namespace wocra
             virtual ~wOcraTaskSequenceBase();
             void init(wocra::wOcraController& ctrl, wocra::wOcraModel& model);
             void update(double time, wocra::wOcraModel& state, void** args);
+
+
+
         protected:
             virtual void doInit(wocra::wOcraController& ctrl, wocra::wOcraModel& model) = 0;
             virtual void doUpdate(double time, wocra::wOcraModel& state, void** args) = 0;
 
             TaskManagerDict taskManagers;
+
+            bool isActive;
     };
 }
 
