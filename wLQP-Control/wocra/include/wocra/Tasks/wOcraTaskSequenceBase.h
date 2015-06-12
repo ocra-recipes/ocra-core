@@ -1,5 +1,5 @@
-#ifndef wOcraTASKMANAGERCOLLECTIONBASE_H
-#define wOcraTASKMANAGERCOLLECTIONBASE_H
+#ifndef wOcraTASKSEQUENCEBASE_H
+#define wOcraTASKSEQUENCEBASE_H
 
 // Includes the set of all possible task managers to make it easier to reference
 #include "wocra/Tasks/wOcraTaskManagerBase.h"
@@ -19,18 +19,18 @@ namespace wocra
 {
     typedef std::map<std::string, wOcraTaskManagerBase*> TaskManagerDict;
 
-    class wOcraTaskManagerCollectionBase
+    class wOcraTaskSequenceBase
     {
         public:
-            virtual ~wOcraTaskManagerCollectionBase();
+            virtual ~wOcraTaskSequenceBase();
             void init(wocra::wOcraController& ctrl, wocra::wOcraModel& model);
             void update(double time, wocra::wOcraModel& state, void** args);
-        protected: 
+        protected:
             virtual void doInit(wocra::wOcraController& ctrl, wocra::wOcraModel& model) = 0;
-            virtual void doUpdate(double time, wocra::wOcraModel& state, void** args) = 0; 
+            virtual void doUpdate(double time, wocra::wOcraModel& state, void** args) = 0;
 
             TaskManagerDict taskManagers;
     };
 }
 
-#endif // wOcraTASKMANAGERCOLLECTION_H
+#endif // wOcraTASKSEQUENCE_H
