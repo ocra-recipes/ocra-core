@@ -13,7 +13,7 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight) 
+wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _stiffness, _damping, _weight);
@@ -30,7 +30,7 @@ wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl,
  * \param _weight               Weight constant for task
  * \param _init_q               Initial posture
  */
-wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight, const Eigen::VectorXd& _init_q) 
+wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight, const Eigen::VectorXd& _init_q)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _stiffness, _damping, _weight);
@@ -104,7 +104,7 @@ void wOcraFullPostureTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraFullPostureTaskManager::getWeight()
 {
@@ -172,6 +172,22 @@ void wOcraFullPostureTaskManager::deactivate()
 Eigen::VectorXd wOcraFullPostureTaskManager::getTaskError()
 {
     return task->getError();
+}
+
+bool wOcraFullPostureTaskManager::compileOutgoingMessage()
+{
+    yarp::os::Bottle& outputBottle = port_out.prepare();
+    outputBottle.clear();
+    outputBottle.addString(getTaskManagerType());
+    outputBottle.addInt(22);
+
+    return true;
+}
+
+
+std::string wOcraFullPostureTaskManager::getTaskManagerType()
+{
+    return "wOcraFullPostureTaskManager";
 }
 
 

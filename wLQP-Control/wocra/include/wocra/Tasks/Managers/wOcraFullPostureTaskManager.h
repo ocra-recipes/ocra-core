@@ -28,6 +28,11 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
         void activate();
         void deactivate();
 
+        // Yarp related:
+        virtual bool compileOutgoingMessage();
+
+        virtual std::string getTaskManagerType();
+
         // Set the task reference
         void setPosture(const Eigen::VectorXd& q);
         void setPosture(const Eigen::VectorXd& q, const Eigen::VectorXd& qdot, const Eigen::VectorXd& qddot);
