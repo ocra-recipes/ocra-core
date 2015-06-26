@@ -18,12 +18,11 @@ namespace wocra
     void wOcraTaskSequenceBase::update(double time, wocra::wOcraModel& state, void** args)
     {
         // Update all of the individual task managers:
-
         if (!taskManagers.empty()) {
             for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++){
                 it->second->refreshPorts();
             }
-        }
+        }else{std::cout << "[WARNING] No tasks detected!!!" << std::endl;}
 
         // Run the custom doUpdate function of the cpp Sequences for hard coded control logic:
         doUpdate(time, state, args);

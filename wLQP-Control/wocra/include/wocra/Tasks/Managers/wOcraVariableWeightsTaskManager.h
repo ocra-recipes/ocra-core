@@ -17,41 +17,41 @@ namespace wocra
 class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
 {
     public:
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl, 
-                                        const wOcraModel& model, 
-                                        const std::string& taskName, 
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
                                         const std::string& segmentName,
-                                        double stiffness, 
-                                        double damping, 
-                                        Eigen::Vector3d weight); 
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight);
 
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl, 
-                                        const wOcraModel& model, 
-                                        const std::string& taskName, 
-                                        const std::string& segmentName, 
-                                        const Eigen::Vector3d& segPoint_Local,  
-                                        double stiffness, 
-                                        double damping, 
-                                        Eigen::Vector3d weight); 
-
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl, 
-                                        const wOcraModel& model, 
-                                        const std::string& taskName, 
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
                                         const std::string& segmentName,
-                                        double stiffness, 
-                                        double damping, 
-                                        Eigen::Vector3d weight, 
-                                        const Eigen::Vector3d& targetPose); 
+                                        const Eigen::Vector3d& segPoint_Local,
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight);
 
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl, 
-                                        const wOcraModel& model, 
-                                        const std::string& taskName, 
-                                        const std::string& segmentName, 
-                                        const Eigen::Vector3d& segPoint_Local, 
-                                        double stiffness, 
-                                        double damping, 
-                                        Eigen::Vector3d weight, 
-                                        const Eigen::Vector3d& targetPose); 
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
+                                        const std::string& segmentName,
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight,
+                                        const Eigen::Vector3d& targetPose);
+
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
+                                        const std::string& segmentName,
+                                        const Eigen::Vector3d& segPoint_Local,
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight,
+                                        const Eigen::Vector3d& targetPose);
 
         ~wOcraVariableWeightsTaskManager();
 
@@ -69,8 +69,8 @@ class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
         double getStiffness();
         void setDamping(double damping);
         double getDamping();
-        void setWeight(Eigen::Vector3d weight);
-        Eigen::VectorXd getWeight();
+        void setWeights(Eigen::Vector3d weight);
+        Eigen::VectorXd getWeights();
 
         // Task error
         Eigen::VectorXd getTaskError();
@@ -83,7 +83,7 @@ class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
         std::vector<wocra::wOcraTask*>       tasks;
 
         const std::string&              segmentName;
-        
+
 
         ocra::SegmentFrame*              featFrame;
         ocra::TargetFrame*               featDesFrame;

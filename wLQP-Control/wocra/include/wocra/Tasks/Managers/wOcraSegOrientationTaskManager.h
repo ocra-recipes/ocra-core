@@ -17,9 +17,9 @@ namespace wocra
 class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
 {
     public:
-        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight); 
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight);
 
-        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, const Eigen::Rotation3d& targetPose); 
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, const Eigen::Rotation3d& targetPose);
 
         ~wOcraSegOrientationTaskManager();
 
@@ -39,7 +39,13 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
 
         // Task error
         Eigen::VectorXd getTaskError();
- 
+
+        // Yarp related:
+        virtual const double * getCurrentState();
+        virtual std::string getTaskManagerType();
+        virtual bool checkIfActivated();
+
+
     private:
         wocra::wOcraTask*              task;
         const std::string&              segmentName;

@@ -59,6 +59,8 @@ void wOcraSegOrientationTaskManager::_init(Eigen::Rotation3d _refOrientation_Loc
     task->setStiffness(_stiffness);
     task->setDamping(_damping);
     task->setWeight(_weight);
+
+    setStateDimension(4); //Quaternion only.
 }
 
 /** Sets the orientation for the task, only the rotational pose
@@ -70,6 +72,11 @@ void wOcraSegOrientationTaskManager::setOrientation(const Eigen::Rotation3d& ori
     featDesFrame->setPosition(Eigen::Displacementd(Eigen::Vector3d::Zero(), orientation));
     featDesFrame->setVelocity(Eigen::Twistd::Zero());
     featDesFrame->setAcceleration(Eigen::Twistd::Zero());
+
+
+    eigenDesiredStateVector << orientation.w(), orientation.x(), orientation.y(), orientation.z();
+    updateDesiredStateVector(eigenDesiredStateVector.data());
+
 }
 
 /** Sets the weight constant for this task
@@ -83,7 +90,7 @@ void wOcraSegOrientationTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraSegOrientationTaskManager::getWeight()
 {
@@ -153,5 +160,24 @@ Eigen::VectorXd wOcraSegOrientationTaskManager::getTaskError()
     return task->getError();
 }
 
+
+const double* wOcraSegOrientationTaskManager::getCurrentState()
+{
+    eigenCurrentStateVector << featFrame->getPosition().getRotation().w(), featFrame->getPosition().getRotation().x(), featFrame->getPosition().getRotation().y(), featFrame->getPosition().getRotation().z();
+
+    return eigenCurrentStateVector.data();
+}
+
+
+std::string wOcraSegOrientationTaskManager::getTaskManagerType()
+{
+    return "wOcraSegOrientationTaskManager";
+}
+
+
+bool wOcraSegOrientationTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
+}
 
 }

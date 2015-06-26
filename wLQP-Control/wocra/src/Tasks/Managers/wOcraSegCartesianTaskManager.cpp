@@ -98,7 +98,7 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     task->setDamping(_damping);
     task->setWeight(_weight);
 
-
+    setStateDimension(9); //3 dof for pos vel and acc
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
 }
@@ -125,6 +125,8 @@ void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position, con
     featDesFrame->setVelocity(Eigen::Twistd(0.0, 0.0, 0.0, velocity(0), velocity(1), velocity(2)) );
     featDesFrame->setAcceleration(Eigen::Twistd(0.0, 0.0, 0.0, acceleration(0), acceleration(1), acceleration(2)) );
 
+    eigenDesiredStateVector << position, velocity, acceleration;
+    updateDesiredStateVector(eigenDesiredStateVector.data());
 }
 
 
@@ -209,5 +211,23 @@ Eigen::VectorXd wOcraSegCartesianTaskManager::getTaskError()
     return task->getError();
 }
 
+
+const double* wOcraSegCartesianTaskManager::getCurrentState()
+{
+    eigenCurrentStateVector << featFrame->getPosition().getTranslation(), featFrame->getVelocity().getLinearVelocity(), featFrame->getAcceleration().getLinearVelocity();
+    return eigenCurrentStateVector.data();
+}
+
+
+std::string wOcraSegCartesianTaskManager::getTaskManagerType()
+{
+    return "wOcraSegCartesianTaskManager";
+}
+
+
+bool wOcraSegCartesianTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
+}
 
 }

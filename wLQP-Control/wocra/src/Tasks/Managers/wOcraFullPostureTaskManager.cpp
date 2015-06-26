@@ -58,6 +58,8 @@ void wOcraFullPostureTaskManager::_init(int fullStateType, double stiffness, dou
     task->setWeight(weight);
 
     task->activateAsObjective();
+
+    setStateDimension(task->getDimension());
 }
 
 /** Sets the full joint space posture for the task
@@ -90,6 +92,9 @@ void wOcraFullPostureTaskManager::setPosture(const Eigen::VectorXd& q, const Eig
     featDesState->set_q(q);
     featDesState->set_qdot(qdot);
     featDesState->set_qddot(qddot);
+
+    //TODO: Need to include dq and ddq. Adjust stateDimension accordingly.
+    updateDesiredStateVector(q.data());
 }
 
 
@@ -174,20 +179,20 @@ Eigen::VectorXd wOcraFullPostureTaskManager::getTaskError()
     return task->getError();
 }
 
-bool wOcraFullPostureTaskManager::compileOutgoingMessage()
+const double* wOcraFullPostureTaskManager::getCurrentState()
 {
-    yarp::os::Bottle& outputBottle = port_out.prepare();
-    outputBottle.clear();
-    outputBottle.addString(getTaskManagerType());
-    outputBottle.addInt(22);
-
-    return true;
+    return featState->q().data();
 }
 
 
 std::string wOcraFullPostureTaskManager::getTaskManagerType()
 {
     return "wOcraFullPostureTaskManager";
+}
+
+bool wOcraFullPostureTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
 }
 
 

@@ -14,7 +14,7 @@ namespace wocra
  * \param damping               Damping constant for task
  * \param weight                Weight constant for task
  */
-wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight) 
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
@@ -32,7 +32,7 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
  * \param weight                Weight constant for task
  * \param init_q                Initial posture
  */
-wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight, Eigen::VectorXd& _init_q) 
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight, Eigen::VectorXd& _init_q)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
@@ -60,6 +60,8 @@ void wOcraPartialPostureTaskManager::_init(int _fullStateType, VectorXi& _dofInd
     task->setWeight(_weight);
 
     task->activateAsObjective();
+
+    setStateDimension(task->getDimension());
 }
 
 /** Sets the partial joint space posture for the task
@@ -75,6 +77,10 @@ void wOcraPartialPostureTaskManager::setPosture(Eigen::VectorXd& q)
     featDesState->set_q(q);
     featDesState->set_qdot(Eigen::VectorXd::Zero(featDesState->getSize()));
     featDesState->set_qddot(Eigen::VectorXd::Zero(featDesState->getSize()));
+
+
+    //TODO: Need to include dq and ddq. Adjust stateDimension accordingly.
+    updateDesiredStateVector(q.data());
 }
 
 /** Sets the partial joint space posture, velocity and acceleration for the task
@@ -129,12 +135,33 @@ void wOcraPartialPostureTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraPartialPostureTaskManager::getWeight()
 {
     Eigen::VectorXd weights = task->getWeight();
     return weights[0];
 }
+
+const double* wOcraPartialPostureTaskManager::getCurrentState()
+{
+    return featState->q().data();
+}
+
+std::string wOcraPartialPostureTaskManager::getTaskManagerType()
+{
+    return "wOcraPartialPostureTaskManager";
+}
+
+
+bool wOcraPartialPostureTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
+}
+
+
+
+
+
 
 }
