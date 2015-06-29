@@ -4,7 +4,7 @@
 #include "ocra/control/Model.h"
 #include "wocra/Tasks/wOcraTaskManagerBase.h"
 #include "ocra/control/FullState.h"
-#include "wocra/Tasks/wOcraTask.h"
+// #include "wocra/Tasks/wOcraTask.h"
 #include "wocra/wOcraController.h"
 
 #include <Eigen/Dense>
@@ -28,6 +28,11 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
         void activate();
         void deactivate();
 
+        // Yarp related:
+        virtual const double * getCurrentState();
+        virtual std::string getTaskManagerType();
+        virtual bool checkIfActivated();
+
         // Set the task reference
         void setPosture(const Eigen::VectorXd& q);
         void setPosture(const Eigen::VectorXd& q, const Eigen::VectorXd& qdot, const Eigen::VectorXd& qddot);
@@ -45,7 +50,8 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
 
 
     private:
-        wocra::wOcraTask*              task;
+        wocra::wOcraTask*          task;
+
 
         ocra::FullStateFeature*          feat;
         ocra::FullModelState*            featState;

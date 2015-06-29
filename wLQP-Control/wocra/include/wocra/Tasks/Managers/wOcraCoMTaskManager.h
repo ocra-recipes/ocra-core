@@ -17,7 +17,7 @@ namespace wocra
 class wOcraCoMTaskManager: public wOcraTaskManagerBase
 {
     public:
-        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight); 
+        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight);
 
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight,
             Eigen::Vector3d posDes);
@@ -34,7 +34,12 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         void setState(const Eigen::Vector3d& position, const Eigen::Vector3d& velocity, const Eigen::Vector3d& acceleration);
 
 
-        // All Managers have this 
+        // Yarp related:
+        virtual const double * getCurrentState();
+        virtual std::string getTaskManagerType();
+        virtual bool checkIfActivated();
+
+        // All Managers have this
         void activate();
         void deactivate();
 
@@ -50,7 +55,7 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         Eigen::VectorXd getTaskError();
 
     private:
-        wocra::wOcraTask*              task;
+        wocra::wOcraTask*          task;
 
         ocra::PositionFeature*           feat;
         ocra::CoMFrame*                  featFrame;

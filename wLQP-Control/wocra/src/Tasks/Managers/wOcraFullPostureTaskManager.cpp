@@ -13,7 +13,7 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight) 
+wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _stiffness, _damping, _weight);
@@ -30,7 +30,7 @@ wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl,
  * \param _weight               Weight constant for task
  * \param _init_q               Initial posture
  */
-wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight, const Eigen::VectorXd& _init_q) 
+wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, double _stiffness, double _damping, double _weight, const Eigen::VectorXd& _init_q)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_fullStateType, _stiffness, _damping, _weight);
@@ -58,6 +58,8 @@ void wOcraFullPostureTaskManager::_init(int fullStateType, double stiffness, dou
     task->setWeight(weight);
 
     task->activateAsObjective();
+
+    setStateDimension(task->getDimension());
 }
 
 /** Sets the full joint space posture for the task
@@ -90,6 +92,9 @@ void wOcraFullPostureTaskManager::setPosture(const Eigen::VectorXd& q, const Eig
     featDesState->set_q(q);
     featDesState->set_qdot(qdot);
     featDesState->set_qddot(qddot);
+
+    //TODO: Need to include dq and ddq. Adjust stateDimension accordingly.
+    updateDesiredStateVector(q.data());
 }
 
 
@@ -104,7 +109,7 @@ void wOcraFullPostureTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraFullPostureTaskManager::getWeight()
 {
@@ -172,6 +177,22 @@ void wOcraFullPostureTaskManager::deactivate()
 Eigen::VectorXd wOcraFullPostureTaskManager::getTaskError()
 {
     return task->getError();
+}
+
+const double* wOcraFullPostureTaskManager::getCurrentState()
+{
+    return featState->q().data();
+}
+
+
+std::string wOcraFullPostureTaskManager::getTaskManagerType()
+{
+    return "wOcraFullPostureTaskManager";
+}
+
+bool wOcraFullPostureTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
 }
 
 

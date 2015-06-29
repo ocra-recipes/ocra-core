@@ -14,14 +14,14 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl, 
-                                                                const wOcraModel& _model, 
-                                                                const std::string& _taskName, 
-                                                                const std::string& _segmentName, 
-                                                                double _stiffness, 
-                                                                double _damping, 
+wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
                                                                 Eigen::Vector3d _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), 
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
         segmentName(_segmentName)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
@@ -39,15 +39,15 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl, 
-                                                                const wOcraModel& _model, 
-                                                                const std::string& _taskName, 
-                                                                const std::string& _segmentName, 
-                                                                const Eigen::Vector3d& _segPoint_Local, 
-                                                                double _stiffness, 
-                                                                double _damping, 
+wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                const Eigen::Vector3d& _segPoint_Local,
+                                                                double _stiffness,
+                                                                double _damping,
                                                                 Eigen::Vector3d _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), 
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
         segmentName(_segmentName)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);
@@ -65,15 +65,15 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
  * \param _weight               Weight constant for task
  * \param _poseDes              Initial pose (cartesian) for task
  */
-wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl, 
-                                                                const wOcraModel& _model, 
-                                                                const std::string& _taskName, 
-                                                                const std::string& _segmentName, 
-                                                                double _stiffness, 
-                                                                double _damping, 
-                                                                Eigen::Vector3d _weight, 
+wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                Eigen::Vector3d _weight,
                                                                 const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), 
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
         segmentName(_segmentName)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
@@ -93,16 +93,16 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
  * \param _weight               Weight constant for task
  * \param _poseDes              Initial pose (cartesian) for task
  */
-wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl, 
-                                                                const wOcraModel& _model, 
-                                                                const std::string& _taskName, 
-                                                                const std::string& _segmentName, 
-                                                                const Vector3d& _segPoint_Local, 
-                                                                double _stiffness, 
-                                                                double _damping, 
-                                                                Eigen::Vector3d _weight, 
+wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                const Vector3d& _segPoint_Local,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                Eigen::Vector3d _weight,
                                                                 const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), 
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
         segmentName(_segmentName)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);
@@ -119,35 +119,35 @@ void wOcraVariableWeightsTaskManager::_init(const Eigen::Vector3d& _taskPoint_Lo
     axes.resize(nDoF);
     axesLabels.resize(nDoF);
     tasks.resize(nDoF);
-    
+
     axes[0] = ocra::X;
     axes[1] = ocra::Y;
     axes[2] = ocra::Z;
-    
+
     axesLabels[0] = "X";
     axesLabels[1] = "Y";
     axesLabels[2] = "Z";
 
     featFrame = new ocra::SegmentFrame(name + ".SegmentFrame", model, model.SegmentName(segmentName), Eigen::Displacementd(_taskPoint_LocalFrame));
     featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
-    
-    
+
+
     for (int i=0; i<nDoF; i++)
     {
         ocra::PositionFeature* feat = new ocra::PositionFeature(name + ".PositionFeature", *featFrame, axes[i]);
         ocra::PositionFeature* featDes = new ocra::PositionFeature(name + ".PositionFeature_Des", *featDesFrame, axes[i]);
-        
+
         tasks[i] = &(ctrl.createwOcraTask(name+axesLabels[i], *feat, *featDes));
         tasks[i]->initAsAccelerationTask();
         ctrl.addTask(*tasks[i]);
-        
+
         tasks[i]->activateAsObjective();
         tasks[i]->setStiffness(_stiffness);
         tasks[i]->setDamping(_damping);
         tasks[i]->setWeight(_weight(i));
-        
+
     }
-    
+
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
 }
@@ -179,7 +179,7 @@ void wOcraVariableWeightsTaskManager::setState(const Eigen::Vector3d& position, 
  *
  *  \param weight               Desired weight value
  */
-void wOcraVariableWeightsTaskManager::setWeight(Eigen::Vector3d weight)
+void wOcraVariableWeightsTaskManager::setWeights(Eigen::Vector3d weight)
 {
     for (int i=0; i<nDoF; i++)
     {
@@ -189,9 +189,9 @@ void wOcraVariableWeightsTaskManager::setWeight(Eigen::Vector3d weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
-Eigen::VectorXd wOcraVariableWeightsTaskManager::getWeight()
+Eigen::VectorXd wOcraVariableWeightsTaskManager::getWeights()
 {
     Eigen::VectorXd weights(nDoF);
     for (int i=0; i<nDoF; i++)

@@ -18,6 +18,7 @@
 namespace wocra
 {
     typedef std::map<std::string, wOcraTaskManagerBase*> TaskManagerDict;
+    typedef std::map<std::string, wOcraTaskManagerBase*>::iterator tmIterator;
 
     class wOcraTaskSequenceBase
     {
@@ -25,6 +26,9 @@ namespace wocra
             virtual ~wOcraTaskSequenceBase();
             void init(wocra::wOcraController& ctrl, wocra::wOcraModel& model);
             void update(double time, wocra::wOcraModel& state, void** args);
+
+            bool addTaskManager(std::string keyValue, wOcraTaskManagerBase* newTaskManager);
+            bool removeTaskManager(std::string keyValue);
 
 
 
@@ -34,7 +38,6 @@ namespace wocra
 
             TaskManagerDict taskManagers;
 
-            bool isActive;
     };
 }
 

@@ -26,6 +26,10 @@ endif()
 # Check dependencies
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED)
+find_package(YARP REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${YARP_MODULE_PATH})
+
+
 PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)
 if(NOT PC_EIGEN_FOUND)
     message("Failed to detect Eigen, check PKG_CONFIG_PATH." )

@@ -5,6 +5,7 @@ include_directories(
     ${quadprog_SOURCE_DIR}/include
     ${PC_EIGEN_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
+    ${YARP_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
@@ -30,6 +31,7 @@ target_link_libraries(
     ocra_control
     ocra_optim
     quadprog
+    ${YARP_LIBRARIES}
 )
 
 install(

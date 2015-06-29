@@ -12,8 +12,8 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight) 
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName) 
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_stiffness, _damping, _weight);
 }
@@ -28,7 +28,7 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraMode
  * \param _weight               Weight constant for task
  * \param _posDes               Vector for desired position
  */
-wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight, Eigen::Vector3d _posDes) 
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight, Eigen::Vector3d _posDes)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName)
 {
     _init(_stiffness, _damping, _weight);
@@ -48,7 +48,7 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraMode
  * \param accDes                Vector for desired acceleration
  */
 /*
-wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& ctrl, const Model& model, const std::string& taskName, double stiffness, double damping, double weight, Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes) 
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& ctrl, const Model& model, const std::string& taskName, double stiffness, double damping, double weight, Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes)
     : _ctrl(ctrl), _model(model), _name(taskName)
 {
     _init(stiffness, damping, weight);
@@ -74,6 +74,8 @@ void wOcraCoMTaskManager::_init(double stiffness, double damping, double weight)
     task->setWeight(weight);
     task->activateAsObjective();
 
+    setStateDimension(9); //3 dof for pos vel and acc
+
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getCoMPosition());
 }
@@ -98,6 +100,9 @@ void wOcraCoMTaskManager::setState(const Eigen::Vector3d& position, const Eigen:
     featDesFrame->setPosition(Eigen::Displacementd(position));
     featDesFrame->setVelocity(Eigen::Twistd(0.0, 0.0, 0.0, velocity(0), velocity(1), velocity(2)) );
     featDesFrame->setAcceleration(Eigen::Twistd(0.0, 0.0, 0.0, acceleration(0), acceleration(1), acceleration(2)) );
+
+    eigenDesiredStateVector << position, velocity, acceleration;
+    updateDesiredStateVector(eigenDesiredStateVector.data());
 }
 
 /** Sets the weight constant for this task
@@ -111,7 +116,7 @@ void wOcraCoMTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraCoMTaskManager::getWeight()
 {
@@ -119,8 +124,8 @@ double wOcraCoMTaskManager::getWeight()
     return weights[0];
 }
 
-/** Sets the stiffness for this task 
- * 
+/** Sets the stiffness for this task
+ *
  * \param stiffness             Desired stiffness
  */
 void wOcraCoMTaskManager::setStiffness(double stiffness)
@@ -130,7 +135,7 @@ void wOcraCoMTaskManager::setStiffness(double stiffness)
 
 /** Gets the stiffness constant for this task
  *
- *  \return                     The stiffness for this task 
+ *  \return                     The stiffness for this task
  */
 double wOcraCoMTaskManager::getStiffness()
 {
@@ -138,8 +143,8 @@ double wOcraCoMTaskManager::getStiffness()
     return K(0, 0);
 }
 
-/** Sets the damping for this task 
- * 
+/** Sets the damping for this task
+ *
  * \param damping               Desired damping
  */
 void wOcraCoMTaskManager::setDamping(double damping)
@@ -149,7 +154,7 @@ void wOcraCoMTaskManager::setDamping(double damping)
 
 /** Gets the damping constant for this task
  *
- *  \return                     The damping for this task 
+ *  \return                     The damping for this task
  */
 double wOcraCoMTaskManager::getDamping()
 {
@@ -174,11 +179,29 @@ void wOcraCoMTaskManager::deactivate()
 }
 
 /** Gets the error for this task (COM position error)
- * 
+ *
  */
 Eigen::VectorXd wOcraCoMTaskManager::getTaskError()
 {
     return task->getError();
 }
+
+const double* wOcraCoMTaskManager::getCurrentState()
+{
+    eigenCurrentStateVector << featFrame->getPosition().getTranslation(), featFrame->getVelocity().getLinearVelocity(), featFrame->getAcceleration().getLinearVelocity();
+    return eigenCurrentStateVector.data();
+}
+
+
+std::string wOcraCoMTaskManager::getTaskManagerType()
+{
+    return "wOcraCoMTaskManager";
+}
+
+bool wOcraCoMTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
+}
+
 
 }

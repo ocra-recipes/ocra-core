@@ -62,8 +62,11 @@ void wOcraSegPoseTaskManager::_init(const Eigen::Displacementd& _ref_LocalFrame,
     task->setDamping(_damping);
     task->setWeight(_weight);
 
+    setStateDimension(7+6+6); // dispd = 7 + 2*twistd = 6
+
     // Set the desired state to the current pose of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)));
+
 }
 
 /** Sets the pose for the task, both the translational and rotational components
@@ -86,6 +89,10 @@ void wOcraSegPoseTaskManager::setState(const Eigen::Displacementd& pose, const E
     featDesFrame->setPosition(pose);
     featDesFrame->setVelocity(velocity);
     featDesFrame->setAcceleration(acceleration);
+
+    eigenDesiredStateVector << featDesFrame->getPosition().getTranslation(), featDesFrame->getPosition().getRotation().w(), featDesFrame->getPosition().getRotation().x(), featDesFrame->getPosition().getRotation().y(), featDesFrame->getPosition().getRotation().z(), featDesFrame->getVelocity().getLinearVelocity(), featDesFrame->getVelocity().getAngularVelocity(), featDesFrame->getAcceleration().getLinearVelocity(), featDesFrame->getAcceleration().getAngularVelocity();
+
+    updateDesiredStateVector(eigenDesiredStateVector.data());
 }
 
 /** Sets the weight constant for this task
@@ -99,7 +106,7 @@ void wOcraSegPoseTaskManager::setWeight(double weight)
 
 /** Gets the weight constant for this task
  *
- *  \return                     The weight for this task 
+ *  \return                     The weight for this task
  */
 double wOcraSegPoseTaskManager::getWeight()
 {
@@ -168,6 +175,25 @@ void wOcraSegPoseTaskManager::activate()
 void wOcraSegPoseTaskManager::deactivate()
 {
     task->deactivate();
+}
+
+const double* wOcraSegPoseTaskManager::getCurrentState()
+{
+    eigenCurrentStateVector << featFrame->getPosition().getTranslation(), featFrame->getPosition().getRotation().w(), featFrame->getPosition().getRotation().x(), featFrame->getPosition().getRotation().y(), featFrame->getPosition().getRotation().z(), featFrame->getVelocity().getLinearVelocity(), featFrame->getVelocity().getAngularVelocity(), featFrame->getAcceleration().getLinearVelocity(), featFrame->getAcceleration().getAngularVelocity();
+
+    return eigenCurrentStateVector.data();
+}
+
+
+std::string wOcraSegPoseTaskManager::getTaskManagerType()
+{
+    return "wOcraSegPoseTaskManager";
+}
+
+
+bool wOcraSegPoseTaskManager::checkIfActivated()
+{
+    return task->isActiveAsObjective();
 }
 
 }
