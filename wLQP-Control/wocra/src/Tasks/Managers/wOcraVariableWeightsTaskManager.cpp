@@ -20,8 +20,9 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
                                                                 const std::string& _segmentName,
                                                                 double _stiffness,
                                                                 double _damping,
-                                                                Eigen::Vector3d _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
+                                                                Eigen::Vector3d _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts),
         segmentName(_segmentName)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
@@ -46,8 +47,9 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
                                                                 const Eigen::Vector3d& _segPoint_Local,
                                                                 double _stiffness,
                                                                 double _damping,
-                                                                Eigen::Vector3d _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
+                                                                Eigen::Vector3d _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts),
         segmentName(_segmentName)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);
@@ -72,8 +74,9 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
                                                                 double _stiffness,
                                                                 double _damping,
                                                                 Eigen::Vector3d _weight,
-                                                                const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
+                                                                const Eigen::Vector3d& _poseDes,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts),
         segmentName(_segmentName)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
@@ -101,8 +104,9 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
                                                                 double _stiffness,
                                                                 double _damping,
                                                                 Eigen::Vector3d _weight,
-                                                                const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName),
+                                                                const Eigen::Vector3d& _poseDes,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts),
         segmentName(_segmentName)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);

@@ -29,6 +29,7 @@ namespace wocra
 
             bool addTaskManager(std::string keyValue, wOcraTaskManagerBase* newTaskManager);
             bool removeTaskManager(std::string keyValue);
+            bool clearSequence();
 
 
 

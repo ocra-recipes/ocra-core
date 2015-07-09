@@ -13,8 +13,15 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName)
+wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                double _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName)
 {
     _init(Eigen::Rotation3d::Identity(), _stiffness, _damping, _weight);
 }
@@ -30,8 +37,16 @@ wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& 
  * \param _weight               Weight constant for task
  * \param _orientationDes       Initial orientation for task
  */
-wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, double _stiffness, double _damping, double _weight, const Eigen::Rotation3d& _orientationDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName)
+wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                double _weight,
+                                                                const Eigen::Rotation3d& _orientationDes,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName)
 {
     _init(Eigen::Rotation3d::Identity(), _stiffness, _damping, _weight);
     setOrientation(_orientationDes);

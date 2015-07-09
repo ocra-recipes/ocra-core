@@ -31,18 +31,17 @@ namespace wocra
     bool wOcraTaskSequenceBase::addTaskManager(std::string keyValue, wOcraTaskManagerBase* newTaskManager)
     {
         if (newTaskManager==NULL) {
-            std::cout << "WARNING: [addTaskManager] The newTaskManager pointer you passed was empty." << std::endl;
+            std::cout << "[WARNING] (wOcraTaskSequenceBase::addTaskManager): The newTaskManager pointer you passed was empty." << std::endl;
             return false;
         }
 
         //Check if key already exists... If not, .find() will return a iterator to the end of the map.
-
         if (taskManagers.find(keyValue) == taskManagers.end()) {
             taskManagers[keyValue] = newTaskManager;
             return true;
         }
         else{
-            std::cout << "WARNING: [addTaskManager] The key value you passed already exists. Cannot overwrite tasks, please remove tasks before replacing them." << std::endl;
+            std::cout << "[WARNING] (wOcraTaskSequenceBase::addTaskManager): The key value you passed already exists. Cannot overwrite tasks, please remove tasks before replacing them." << std::endl;
             return false;
         }
     }
@@ -50,14 +49,30 @@ namespace wocra
     bool wOcraTaskSequenceBase::removeTaskManager(std::string keyValue)
     {
         if (taskManagers.find(keyValue) != taskManagers.end()) {
-            // taskManagers.erase
-            //TODO: Implement some sort of task phase out trigger. If we just remove the task then it could cause problems.
+            //TODO: Deactivate tasks smoothly?
+            taskManagers[keyValue]->deactivate();
+            taskManagers.erase(keyValue);
             return true;
         }
         else{
-            std::cout << "ERROR: [removeTaskManager] The task key you passed does not exist." << std::endl;
+            std::cout << "[ERROR] (wOcraTaskSequenceBase::removeTaskManager): The task key you passed does not exist." << std::endl;
             return false;
         }
+    }
+
+    bool wOcraTaskSequenceBase::clearSequence()
+    {
+        std::cout << "\n=== Deactivating tasks ===" << std::endl;
+        for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++)
+        {
+            std::cout << " --> " << it->first << std::endl;
+            it->second->deactivate();
+        }
+
+        std::cout << "\n Clearing task sequence...\n" << std::endl;
+        taskManagers.clear();
+        return true;
+
     }
 
 }

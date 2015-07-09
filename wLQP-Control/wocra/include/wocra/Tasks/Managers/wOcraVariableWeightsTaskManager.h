@@ -23,25 +23,8 @@ class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
                                         const std::string& segmentName,
                                         double stiffness,
                                         double damping,
-                                        Eigen::Vector3d weight);
-
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
-                                        const wOcraModel& model,
-                                        const std::string& taskName,
-                                        const std::string& segmentName,
-                                        const Eigen::Vector3d& segPoint_Local,
-                                        double stiffness,
-                                        double damping,
-                                        Eigen::Vector3d weight);
-
-        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
-                                        const wOcraModel& model,
-                                        const std::string& taskName,
-                                        const std::string& segmentName,
-                                        double stiffness,
-                                        double damping,
                                         Eigen::Vector3d weight,
-                                        const Eigen::Vector3d& targetPose);
+                                        bool usesYarpPorts = false);
 
         wOcraVariableWeightsTaskManager(wOcraController& ctrl,
                                         const wOcraModel& model,
@@ -51,7 +34,28 @@ class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
                                         double stiffness,
                                         double damping,
                                         Eigen::Vector3d weight,
-                                        const Eigen::Vector3d& targetPose);
+                                        bool usesYarpPorts = false);
+
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
+                                        const std::string& segmentName,
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight,
+                                        const Eigen::Vector3d& targetPose,
+                                        bool usesYarpPorts = false);
+
+        wOcraVariableWeightsTaskManager(wOcraController& ctrl,
+                                        const wOcraModel& model,
+                                        const std::string& taskName,
+                                        const std::string& segmentName,
+                                        const Eigen::Vector3d& segPoint_Local,
+                                        double stiffness,
+                                        double damping,
+                                        Eigen::Vector3d weight,
+                                        const Eigen::Vector3d& targetPose,
+                                        bool usesYarpPorts = false);
 
         ~wOcraVariableWeightsTaskManager();
 

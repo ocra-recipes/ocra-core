@@ -12,8 +12,8 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName)
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight, bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
 {
     _init(_stiffness, _damping, _weight);
 }
@@ -28,8 +28,8 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraMode
  * \param _weight               Weight constant for task
  * \param _posDes               Vector for desired position
  */
-wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight, Eigen::Vector3d _posDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName)
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, double _stiffness, double _damping, double _weight, Eigen::Vector3d _posDes, bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
 {
     _init(_stiffness, _damping, _weight);
     setState(_posDes);

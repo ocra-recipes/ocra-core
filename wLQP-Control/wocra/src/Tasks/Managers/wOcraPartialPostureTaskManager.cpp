@@ -14,8 +14,16 @@ namespace wocra
  * \param damping               Damping constant for task
  * \param weight                Weight constant for task
  */
-wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName)
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                int _fullStateType,
+                                                                Eigen::VectorXi& _dofIndices,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                double _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
 {
     _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
 }
@@ -32,8 +40,17 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
  * \param weight                Weight constant for task
  * \param init_q                Initial posture
  */
-wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, int _fullStateType, Eigen::VectorXi& _dofIndices, double _stiffness, double _damping, double _weight, Eigen::VectorXd& _init_q)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName)
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                int _fullStateType,
+                                                                Eigen::VectorXi& _dofIndices,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                double _weight,
+                                                                Eigen::VectorXd& _init_q,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
 {
     _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
     setPosture(_init_q);

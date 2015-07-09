@@ -14,10 +14,45 @@ namespace wocra
  * \param _damping               Damping constant for task
  * \param _weight                Weight constant for task
  */
-wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    double _weight,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(Eigen::Displacementd::Identity(), _stiffness, _damping, _weight);
+}
+
+/** Constructor with offset frame
+ *
+ * \param _ctrl                  wOcraController to connect to
+ * \param _model                 ocra model to setup the task
+ * \param _taskName              Name of the task
+ * \param _segmentName           Name of the segment for the task
+ * \param _segFrame_Local        The point to track the task in local frame
+ * \param _axes                  The axes used for the task
+ * \param _stiffness             Stiffness constant for task
+ * \param _damping               Damping constant for task
+ * \param _weight                Weight constant for task
+ */
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    const Eigen::Displacementd& _segFrame_Local,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    double _weight,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segFrame_Local, _stiffness, _damping, _weight);
 }
 
 /** Constructor with desired pose
@@ -32,10 +67,50 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl, const w
  * \param _weight               Weight constant for task
  * \param _poseDes              Initial pose for task
  */
-wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight, const Eigen::Displacementd& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    double _weight,
+                                                    const Eigen::Displacementd& _poseDes,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(Eigen::Displacementd::Identity(), _stiffness, _damping, _weight);
+    setState(_poseDes);
+}
+
+
+/** Constructor with desired pose
+ *
+ * \param _ctrl                 wOcraController to connect to
+ * \param _model                ocra model to setup the task
+ * \param _taskName             Name of the task
+ * \param _segmentName          Name of the segment for the task
+ * \param _segFrame_Local        The point to track the task in local frame
+ * \param _axes                 The axes used for the task
+ * \param _stiffness            Stiffness constant for task
+ * \param _damping              Damping constant for task
+ * \param _weight               Weight constant for task
+ * \param _poseDes              Initial pose for task
+ */
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    const Eigen::Displacementd& _segFrame_Local,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    double _weight,
+                                                    const Eigen::Displacementd& _poseDes,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segFrame_Local, _stiffness, _damping, _weight);
     setState(_poseDes);
 }
 

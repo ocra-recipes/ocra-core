@@ -17,13 +17,13 @@ namespace wocra
 class wOcraCoMTaskManager: public wOcraTaskManagerBase
 {
     public:
-        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight);
+        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight, bool usesYarpPorts = false);
 
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight,
-            Eigen::Vector3d posDes);
+            Eigen::Vector3d posDes, bool usesYarpPorts = false);
 
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, double stiffness, double damping, double weight,
-            Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes);
+            Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes, bool usesYarpPorts = false);
 
         ~wOcraCoMTaskManager();
 

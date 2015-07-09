@@ -14,8 +14,17 @@ namespace wocra
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            double _weight,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
 }
@@ -32,8 +41,18 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
  * \param _damping              Damping constant for task
  * \param _weight               Weight constant for task
  */
-wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, const Eigen::Vector3d& _segPoint_Local, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            const Eigen::Vector3d& _segPoint_Local,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            double _weight,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);
 }
@@ -50,8 +69,18 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
  * \param _weight               Weight constant for task
  * \param _poseDes              Initial pose (cartesian) for task
  */
-wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight, const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            double _weight,
+                                                            const Eigen::Vector3d& _poseDes,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
     // Have no idea this wrapper needs to be done
@@ -71,8 +100,19 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
  * \param _weight               Weight constant for task
  * \param _poseDes              Initial pose (cartesian) for task
  */
-wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, const std::string& _segmentName, const Vector3d& _segPoint_Local, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight, const Eigen::Vector3d& _poseDes)
-    : wOcraTaskManagerBase(_ctrl, _model, _taskName), segmentName(_segmentName), axes(_axes)
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            const Vector3d& _segPoint_Local,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            double _weight,
+                                                            const Eigen::Vector3d& _poseDes,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
     _init(_segPoint_Local, _stiffness, _damping, _weight);
     setState(_poseDes);

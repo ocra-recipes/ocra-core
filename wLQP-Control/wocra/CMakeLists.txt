@@ -25,8 +25,9 @@ endif()
 
 # Check dependencies
 find_package(PkgConfig REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(YARP REQUIRED)
+find_package(TinyXML REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${YARP_MODULE_PATH})
 
 

@@ -18,9 +18,9 @@ namespace wocra
 class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
 {
     public:
-        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight);
+        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight, bool usesYarpPorts = false);
 
-        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight, const Eigen::VectorXd& init_q);
+        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight, const Eigen::VectorXd& init_q, bool usesYarpPorts = false);
 
         ~wOcraFullPostureTaskManager();
 

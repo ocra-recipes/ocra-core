@@ -4,8 +4,9 @@ include_directories(
     ${ocra_framework_SOURCE_DIR}/include
     ${quadprog_SOURCE_DIR}/include
     ${PC_EIGEN_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIR}
     ${YARP_INCLUDE_DIRS}
+    ${TinyXML_INCLUDE_DIRS}
 )
 
 LINK_DIRECTORIES(
@@ -32,6 +33,8 @@ target_link_libraries(
     ocra_optim
     quadprog
     ${YARP_LIBRARIES}
+    ${TinyXML_LIBRARIES}
+    ${Boost_LIBRARIES}
 )
 
 install(

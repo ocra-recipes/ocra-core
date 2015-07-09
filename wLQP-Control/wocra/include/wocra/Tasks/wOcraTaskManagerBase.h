@@ -19,7 +19,9 @@ namespace wocra
 class wOcraTaskManagerBase
 {
     public:
-        wOcraTaskManagerBase(wocra::wOcraController& ctrl, const wocra::wOcraModel& model, const std::string& name);//, bool usesYarpPorts=false);
+        wOcraTaskManagerBase(wocra::wOcraController& ctrl, const wocra::wOcraModel& model, const std::string& name, bool usesYarpPorts=false);
+        ~wOcraTaskManagerBase();
+
 
         virtual void activate() = 0;
         virtual void deactivate() = 0;
@@ -40,6 +42,7 @@ class wOcraTaskManagerBase
         wocra::wOcraController&        ctrl;
         const wocra::wOcraModel&       model;
         const std::string&              name;
+        std::string                     stableName; //hack to avoid using name in compileOutgoingMessage()
 
         //Generic double vector to store states:
         bool taskManagerActive;
@@ -72,7 +75,7 @@ class wOcraTaskManagerBase
         virtual void parseIncomingMessage(yarp::os::Bottle *input);
         virtual bool compileOutgoingMessage();
 
-
+        void printValidMessageTags();
 
 
         bool usesYARP;
