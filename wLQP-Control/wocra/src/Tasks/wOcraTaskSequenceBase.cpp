@@ -17,13 +17,6 @@ namespace wocra
 
     void wOcraTaskSequenceBase::update(double time, wocra::wOcraModel& state, void** args)
     {
-        // Update all of the individual task managers:
-        if (!taskManagers.empty()) {
-            for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++){
-                it->second->refreshPorts();
-            }
-        }else{std::cout << "[WARNING] No tasks detected!!!" << std::endl;}
-
         // Run the custom doUpdate function of the cpp Sequences for hard coded control logic:
         doUpdate(time, state, args);
     }
@@ -51,6 +44,7 @@ namespace wocra
         if (taskManagers.find(keyValue) != taskManagers.end()) {
             //TODO: Deactivate tasks smoothly?
             taskManagers[keyValue]->deactivate();
+            delete(taskManagers[keyValue]);
             taskManagers.erase(keyValue);
             return true;
         }
@@ -67,6 +61,7 @@ namespace wocra
         {
             std::cout << " --> " << it->first << std::endl;
             it->second->deactivate();
+            delete(it->second);
         }
 
         std::cout << "\n Clearing task sequence...\n" << std::endl;
@@ -74,5 +69,7 @@ namespace wocra
         return true;
 
     }
+
+
 
 }

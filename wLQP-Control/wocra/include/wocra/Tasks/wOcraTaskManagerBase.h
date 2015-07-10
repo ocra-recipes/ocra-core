@@ -7,8 +7,10 @@
 
 #include <Eigen/Dense>
 
-#include <yarp/os/BufferedPort.h>
 #include <yarp/os/Network.h>
+#include <yarp/os/PortReader.h>
+#include <yarp/os/RpcServer.h>
+#include <yarp/os/ConnectionReader.h>
 
 namespace wocra
 {
@@ -35,7 +37,18 @@ class wOcraTaskManagerBase
         virtual VectorXd getTaskError();
         double getTaskErrorNorm();
 
-        void refreshPorts();
+
+        /************** DataProcessor *************/
+        class DataProcessor : public yarp::os::PortReader {
+            private:
+                wOcraTaskManagerBase& tmBase;
+
+            public:
+                DataProcessor(wOcraTaskManagerBase& tmBaseRef);
+
+                virtual bool read(yarp::os::ConnectionReader& connection);
+        };
+        /************** DataProcessor *************/
 
 
     protected:
@@ -72,17 +85,18 @@ class wOcraTaskManagerBase
 
 
         // For parsing and compiling yarp messages.
-        virtual void parseIncomingMessage(yarp::os::Bottle *input);
-        virtual bool compileOutgoingMessage();
+        virtual void parseIncomingMessage(yarp::os::Bottle *input, yarp::os::Bottle *reply);
 
-        void printValidMessageTags();
+        std::string printValidMessageTags();
 
 
         bool usesYARP;
         yarp::os::Network yarp;
-        yarp::os::BufferedPort<yarp::os::Bottle> port_in;
-        yarp::os::BufferedPort<yarp::os::Bottle> port_out;
-        int messageLength, stateDimension;
+        yarp::os::RpcServer rpcPort;
+        DataProcessor processor;
+
+        int stateDimension;
+
 
 
 };

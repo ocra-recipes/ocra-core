@@ -15,6 +15,7 @@
 
 #include "wocra/Models/wOcraModel.h"
 
+
 namespace wocra
 {
     typedef std::map<std::string, wOcraTaskManagerBase*> TaskManagerDict;
@@ -24,6 +25,8 @@ namespace wocra
     {
         public:
             virtual ~wOcraTaskSequenceBase();
+            
+
             void init(wocra::wOcraController& ctrl, wocra::wOcraModel& model);
             void update(double time, wocra::wOcraModel& state, void** args);
 
@@ -33,11 +36,15 @@ namespace wocra
 
 
 
+
+
         protected:
             virtual void doInit(wocra::wOcraController& ctrl, wocra::wOcraModel& model) = 0;
             virtual void doUpdate(double time, wocra::wOcraModel& state, void** args) = 0;
 
             TaskManagerDict taskManagers;
+
+
 
     };
 }

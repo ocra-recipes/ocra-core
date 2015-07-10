@@ -12,19 +12,17 @@ namespace wocra
  * \param taskName              Name of the task
  */
 wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, bool _usesYarpPorts)
-    : ctrl(_ctrl), model(_model), name(_taskName), usesYARP(_usesYarpPorts)
+    : ctrl(_ctrl), model(_model), name(_taskName), usesYARP(_usesYarpPorts), processor(*this)
 {
     stableName = name;
     usesYARP =true;
     if (usesYARP) {
         std::string portPrefix = "/TM/"+name;
 
-        std::cout << "\n\n------\nOpening ports for "<< name <<":" << std::endl;
+        rpcPort.open((portPrefix+"/rpc:i").c_str());
+        rpcPort.setReader(processor);
 
-        port_in.open((portPrefix+":i").c_str());
-        port_out.open((portPrefix+":o").c_str());
-
-        std::cout << "------\n" << std::endl;
+        std::cout << "\n";
     }
     stateDimension = 0; // should be overwritten by derived classes who have implemented the necessary functions.
 }
@@ -32,10 +30,38 @@ wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraMo
 
 wOcraTaskManagerBase::~wOcraTaskManagerBase()
 {
-    port_in.close();
-    port_out.close();
-    std::cout << stableName<<" destroyed" << std::endl;
+    std::cout << "\t--> Closing ports" << std::endl;
+    rpcPort.close();
+    std::cout << "\t--> Destroying " << stableName << std::endl;
 }
+
+/**************************************************************************************************
+                                    Nested PortReader Class
+**************************************************************************************************/
+wOcraTaskManagerBase::DataProcessor::DataProcessor(wOcraTaskManagerBase& tmBaseRef):tmBase(tmBaseRef)
+{
+    //do nothing
+}
+
+bool wOcraTaskManagerBase::DataProcessor::read(yarp::os::ConnectionReader& connection)
+{
+    yarp::os::Bottle input, reply;
+    bool ok = input.read(connection);
+    if (!ok)
+        return false;
+
+    else{
+        tmBase.parseIncomingMessage(&input, &reply);
+        yarp::os::ConnectionWriter *returnToSender = connection.getWriter();
+        if (returnToSender!=NULL) {
+            reply.write(*returnToSender);
+        }
+        return true;
+    }
+}
+/**************************************************************************************************
+**************************************************************************************************/
+
 
 
 
@@ -57,149 +83,173 @@ double wOcraTaskManagerBase::getTaskErrorNorm()
     return getTaskError().norm();
 }
 
-void wOcraTaskManagerBase::refreshPorts()
-{
-    if (usesYARP) {
-        yarp::os::Bottle *input = port_in.read(false);
-        if (input != NULL) {
-            parseIncomingMessage(input);
-            input->clear();
-        }
-    }
-}
 
-void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input)
+void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::os::Bottle *reply)
 {
     int btlSize = input->size();
-
     for (int i=0; i<btlSize;)
     {
         std::string msgTag = input->get(i).asString();
 
-        if(msgTag == "publish")
+        if(msgTag == "getCurrentState")
         {
-            if(compileOutgoingMessage())
-            {
-                port_out.write();
+            updateCurrentStateVector(getCurrentState());
+
+            reply->addString("currentState:");
+            for (int j=0; j < stateDimension; j++){
+                reply->addDouble(currentStateVector[j]);
             }
 
             i++;
         }
-        else if(msgTag == "stiffness")
+
+        // Stiffness
+        else if(msgTag == "setStiffness")
         {
             i++;
             setStiffness(input->get(i).asDouble());
+            reply->addString("Kp:");
+            reply->addDouble(getStiffness());
             i++;
         }
-        else if (msgTag == "damping")
+        else if(msgTag == "getStiffness")
+        {
+            reply->addString("Kp:");
+            reply->addDouble(getStiffness());
+            i++;
+        }
+
+        // Damping
+        else if (msgTag == "setDamping")
         {
             i++;
             setDamping(input->get(i).asDouble());
+            reply->addString("Kd:");
+            reply->addDouble(getDamping());
             i++;
         }
-        else if (msgTag == "weight")
+        else if(msgTag == "getDamping")
+        {
+            reply->addString("Kd:");
+            reply->addDouble(getDamping());
+            i++;
+        }
+
+        // Weight
+        else if (msgTag == "setWeight")
         {
             i++;
             setWeight(input->get(i).asDouble());
+            reply->addString("Weight:");
+            reply->addDouble(getWeight());
             i++;
         }
-        else if (msgTag == "desired_state")
+        else if(msgTag == "getWeight")
+        {
+            reply->addString("Weight:");
+            reply->addDouble(getWeight());
+            i++;
+        }
+
+        // Desired State
+        else if (msgTag == "setDesired")
         {
             std::cout << "Implement setDesiredState..." << std::endl;
+            reply->addString("Desired:");
+            for (int j=0; j < stateDimension; j++){
+                reply->addDouble(desiredStateVector[j]);
+            }
+            i++;
         }
+        else if(msgTag == "getDesired")
+        {
+            reply->addString("Desired:");
+            for (int j=0; j < stateDimension; j++){
+                reply->addDouble(desiredStateVector[j]);
+            }
+            i++;
+        }
+
+        // Activity Status
+        else if (msgTag == "getActivityStatus")
+        {
+            reply->addString("activated");
+            reply->addInt(checkIfActivated());
+            i++;
+        }
+
+        // Activate
         else if (msgTag == "activate")
         {
             activate();
+            if (checkIfActivated()) {
+                reply->addString("activated");
+            }else{reply->addString("failed");}
+
+            i++;
         }
+
+        // Deactivate
         else if (msgTag == "deactivate")
         {
             deactivate();
+            if (!checkIfActivated()) {
+                reply->addString("deactivated");
+            }else{reply->addString("failed");}
+            i++;
         }
-        else if (msgTag == "state_dimension")
+
+        // State Dimension
+        else if (msgTag == "getDimension")
         {
-            std::cout << "The task, " << stableName << " has state_dimension = " << stateDimension << "." << std::endl;
+            reply->addString("Dimension:");
+            reply->addInt(stateDimension);
+            i++;
         }
+
+        // Help
         else if (msgTag == "help")
         {
-            printValidMessageTags();
+            // TODO: Properly print help message to rpc reply
+            // reply->addString(printValidMessageTags());
+            std::cout << printValidMessageTags();
+            i++;
         }
+
+        // Fallback
         else
         {
-            std::cout << "[ERROR] (wOcraTaskManagerBase::parseIncomingMessage): Aborting. The message tag, " << msgTag << " doesn't exist. Here is some help..." << std::endl;
-            // printValidMessageTags();
-            // i=btlSize;
+            std::cout << "[WARNING] (wOcraTaskManagerBase::parseIncomingMessage): The message tag, " << msgTag << " doesn't exist. Skipping. Use help to see availible options." << std::endl;
+
+            reply->addString("invalid_input");
+            i++;
         }
     }
 }
 
-void wOcraTaskManagerBase::printValidMessageTags()
+std::string wOcraTaskManagerBase::printValidMessageTags()
 {
-    std::cout << "\n=== Valid message tags are: ===" << std::endl;
-    std::cout << "stiffness  <-- Allows you to set the Kp gain. Expects 1 double value" << std::endl;
-    std::cout << "damping  <-- Allows you to set the Kd gain. Expects 1 double value" << std::endl;
-    std::cout << "weight  <-- Allows you to set the task weight. Expects 1 double value" << std::endl;
-    std::cout << "desired_state  <-- Allows you to set the desired task reference. Expects nDoF double values where nDoF is the task dimension" << std::endl;
-    std::cout << "activate  <-- Allows you to activate the task. No arguments expected" << std::endl;
-    std::cout << "deactivate  <-- Allows you to deactivate the task. No arguments expected" << std::endl;
-    std::cout << "state_dimension  <-- Prints the state dimension. No arguments expected" << std::endl;
-    std::cout << "help  <-- Prints all the valid commands. No arguments expected" << std::endl;
+    std::string helpString  = "\n=== Valid message tags are: ===\n";
+    helpString += "setStiffness: Allows you to set the Kp gain. Expects 1 double value.\n";
+    helpString += "setDamping: Allows you to set the Kd gain. Expects 1 double value.\n";
+    helpString += "setWeight: Allows you to set the task weight. Expects 1 double value.\n";
+    helpString += "setDesired: Allows you to set the desired task reference. Expects nDoF double values where nDoF is the task dimension.\n";
+    helpString += "getCurrentState: Allows you to get the current state of the task. No arguments expected.\n";
+    helpString += "getStiffness: Allows you to get the Kp gain. No arguments expected.\n";
+    helpString += "getDamping: Allows you to get the Kd gain. No arguments expected.\n";
+    helpString += "getWeight: Allows you to get the task weight. No arguments expected.\n";
+    helpString += "getDesired: Allows you to get the desired task reference. No arguments expected.\n";
+    helpString += "getActivityStatus: Queries the activity status of the task. No arguments expected.\n";
+    helpString += "activate: Allows you to activate the task. No arguments expected.\n";
+    helpString += "deactivate: Allows you to deactivate the task. No arguments expected.\n";
+    helpString += "getDimension: Prints the state dimension. No arguments expected.\n";
+    helpString += "help: Prints all the valid commands. No arguments expected.\n";
 
-    std::cout << "\nTypical usage: [message tag] [message value(s)]\ne.g.\t >> stiffness 20 damping 10 desired_state 1.0 2.0 2.0" << std::endl;
-    std::cout << "\n\t FYI: your state dimension is: " << stateDimension << std::endl;
+    helpString += "\nTypical usage: [message tag] [message value(s)]\ne.g.  >> stiffness 20 damping 10 desired_state 1.0 2.0 2.0\n";
+
+    return helpString;
 }
 
-bool wOcraTaskManagerBase::compileOutgoingMessage()
-{
-
-    messageLength = BASE_MESSAGE_SIZE + 2*stateDimension;
-
-
-
-    yarp::os::Bottle& outputBottle = port_out.prepare();
-    outputBottle.clear();
-    //TODO: using "name" gives seg fault... Not sure why. this is a hack.
-    outputBottle.addString(stableName);
-    outputBottle.addString(getTaskManagerType());
-    outputBottle.addInt(messageLength);
-    // Kp
-    outputBottle.addString("stiffness");
-    outputBottle.addDouble(getStiffness());
-
-    // Kd
-    outputBottle.addString("damping");
-    outputBottle.addDouble(getDamping());
-
-    // Weight
-    outputBottle.addString("weight");
-    outputBottle.addDouble(getWeight());
-
-    // State Dimension
-    outputBottle.addString("state_dimension");
-    outputBottle.addInt(stateDimension);
-
-    // // Current State
-
-    updateCurrentStateVector(getCurrentState());
-
-    outputBottle.addString("current_state");
-    for (int i=0; i < stateDimension; i++){
-        outputBottle.addDouble(currentStateVector[i]);
-    }
-
-    // Desired State
-    outputBottle.addString("desired_state");
-    for (int i=0; i < stateDimension; i++){
-        outputBottle.addDouble(desiredStateVector[i]);
-    }
-
-    // isActivated
-    outputBottle.addString("activation_status");
-    outputBottle.addInt(checkIfActivated());
-
-
-    return true;
-
-}
 
 
 std::string wOcraTaskManagerBase::getTaskManagerType()
