@@ -154,7 +154,17 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
         // Desired State
         else if (msgTag == "setDesired")
         {
-            std::cout << "Implement setDesiredState..." << std::endl;
+            i++;
+            int startIndex = i;
+            int k = 0;
+            while(i<(startIndex + stateDimension))
+            {
+                newDesiredStateVector[k] = input->get(i).asDouble(); //make sure there are no NULL entries
+                i++; k++;
+            }
+            setDesiredState(); // constructs the appropropriate state inputs
+
+
             reply->addString("Desired:");
             for (int j=0; j < stateDimension; j++){
                 reply->addDouble(desiredStateVector[j]);
@@ -262,6 +272,12 @@ void wOcraTaskManagerBase::setStateDimension(int taskDimension)
     stateDimension = taskDimension;
     currentStateVector.resize(stateDimension);
     desiredStateVector.resize(stateDimension);
+    newDesiredStateVector.resize(stateDimension);
+
+    for(int i=0; i<stateDimension; i++){
+      newDesiredStateVector[i] = 0.0; //make sure there are no NULL entries
+    }
+
     eigenCurrentStateVector = Eigen::VectorXd::Zero(stateDimension);
     eigenDesiredStateVector = Eigen::VectorXd::Zero(stateDimension);
 }

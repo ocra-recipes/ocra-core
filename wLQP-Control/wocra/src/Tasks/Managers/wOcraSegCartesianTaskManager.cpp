@@ -169,6 +169,16 @@ void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position, con
     updateDesiredStateVector(eigenDesiredStateVector.data());
 }
 
+void wOcraSegCartesianTaskManager::setDesiredState()
+{
+    Eigen::Vector3d newPosition; //TODO:add newVel, newAcc later
+    for(int i=0;i<3;i++)
+    {
+        newPosition[i] = newDesiredStateVector[i];
+    }
+    setState(newPosition);
+}
+
 
 /** Sets the weight constant for this task
  *
