@@ -226,6 +226,22 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
             i++;
         }
 
+        // Task Manager Type
+        else if (msgTag == "getType")
+        {
+            reply->addString("Type:");
+            reply->addString(getTaskManagerType());
+            i++;
+        }
+
+        // Task Manager Name
+        else if (msgTag == "getName")
+        {
+            reply->addString("Name:");
+            reply->addString(stableName);
+            i++;
+        }
+
         // Fallback
         else
         {
@@ -253,6 +269,8 @@ std::string wOcraTaskManagerBase::printValidMessageTags()
     helpString += "activate: Allows you to activate the task. No arguments expected.\n";
     helpString += "deactivate: Allows you to deactivate the task. No arguments expected.\n";
     helpString += "getDimension: Prints the state dimension. No arguments expected.\n";
+    helpString += "getType: Retrieve the Type of the task. No arguments expected.\n";
+    helpString += "getName: Retrieve the Name of the task. No arguments expected.\n";
     helpString += "help: Prints all the valid commands. No arguments expected.\n";
 
     helpString += "\nTypical usage: [message tag] [message value(s)]\ne.g.  >> stiffness 20 damping 10 desired_state 1.0 2.0 2.0\n";

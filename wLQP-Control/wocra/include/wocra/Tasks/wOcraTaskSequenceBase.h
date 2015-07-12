@@ -25,7 +25,7 @@ namespace wocra
     {
         public:
             virtual ~wOcraTaskSequenceBase();
-            
+
 
             void init(wocra::wOcraController& ctrl, wocra::wOcraModel& model);
             void update(double time, wocra::wOcraModel& state, void** args);
@@ -33,7 +33,7 @@ namespace wocra
             bool addTaskManager(std::string keyValue, wOcraTaskManagerBase* newTaskManager);
             bool removeTaskManager(std::string keyValue);
             bool clearSequence();
-
+            std::vector<std::string> getTaskList();
 
 
 

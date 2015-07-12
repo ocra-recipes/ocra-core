@@ -70,6 +70,17 @@ namespace wocra
 
     }
 
+    std::vector<std::string> wOcraTaskSequenceBase::getTaskList()
+    {
+        std::vector<std::string> strVector(taskManagers.size());
+        int i = 0;
+        for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++)
+        {
+            strVector[i] = it->first;
+            i++;
+        }
+        return strVector;
+    }
 
 
 }
