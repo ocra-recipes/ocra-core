@@ -55,7 +55,7 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         Eigen::VectorXd getTaskError();
 
     private:
-        wocra::wOcraTask*          task;
+        // wocra::wOcraTask*          task;
 
         ocra::PositionFeature*           feat;
         ocra::CoMFrame*                  featFrame;

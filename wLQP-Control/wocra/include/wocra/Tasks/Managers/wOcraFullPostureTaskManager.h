@@ -50,7 +50,7 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
 
 
     private:
-        wocra::wOcraTask*          task;
+        // wocra::wOcraTask*          task;
 
 
         ocra::FullStateFeature*          feat;

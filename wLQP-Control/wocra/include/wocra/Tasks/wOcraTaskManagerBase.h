@@ -28,6 +28,7 @@ class wOcraTaskManagerBase
         virtual void activate() = 0;
         virtual void deactivate() = 0;
 
+        std::string getPortName();
 
 
 
@@ -52,6 +53,9 @@ class wOcraTaskManagerBase
 
 
     protected:
+        wocra::wOcraTask*              task;
+
+
         wocra::wOcraController&        ctrl;
         const wocra::wOcraModel&       model;
         const std::string&              name;
@@ -94,6 +98,7 @@ class wOcraTaskManagerBase
         bool usesYARP;
         yarp::os::Network yarp;
         yarp::os::RpcServer rpcPort;
+        std::string portName;
         DataProcessor processor;
 
         int stateDimension;

@@ -183,6 +183,17 @@ namespace ocra
       addTask(*tasks[i]);
   }
 
+  void Controller::removeTask(const std::string taskName)
+  {
+    pimpl->tasks.getData().erase(taskName);
+  }
+
+  void Controller::removeTasks(const std::vector<std::string> tasks)
+  {
+    for(size_t i = 0; i < tasks.size(); ++i)
+      removeTask(tasks[i]);
+  }
+
   void Controller::addContactSet(const ContactSet& contacts)
   {
     doAddContactSet(contacts);

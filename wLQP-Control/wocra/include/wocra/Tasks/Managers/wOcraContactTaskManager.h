@@ -28,7 +28,7 @@ class wOcraContactTaskManager : public wOcraTaskManagerBase
         VectorXd getTaskError(); // Overrides base class function in this context
         double getTaskErrorNorm(); // Overrides base class function in this context
     private:
-        wocra::wOcraTask*          task;
+        // wocra::wOcraTask*          task;
         const std::string&          segmentName;
 
         ocra::PointContactFeature*   feat;

@@ -41,7 +41,7 @@ class wOcraPartialPostureTaskManager : public wOcraTaskManagerBase
         virtual bool checkIfActivated();
 
     private:
-        wocra::wOcraTask*                      task;
+        // wocra::wOcraTask*                      task;
         wocra::PartialStateFeature*           feat;
         wocra::PartialModelState*             featState;
 

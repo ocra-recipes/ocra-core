@@ -180,7 +180,6 @@ wOcraTask::wOcraTask(const std::string& taskName, const Model& innerModel, const
 
 wOcraTask::~wOcraTask()
 {
-
 }
 
 
@@ -469,9 +468,9 @@ void wOcraTask::doSetWeight()
     if (pimpl->innerTaskAsObjective)
     {
         pimpl->innerTaskAsObjective->setWeight(pimpl->weight);
-        // pimpl->innerTaskAsObjective->changeWeight(pimpl->weight);  
+        // pimpl->innerTaskAsObjective->changeWeight(pimpl->weight);
     }
-    
+
 
 }
 

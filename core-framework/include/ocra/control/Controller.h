@@ -55,6 +55,10 @@ namespace ocra
 
     void addTask(Task& task);
     void addTasks(const std::vector<Task*>& tasks);
+
+    void removeTask(const std::string taskName);
+    void removeTasks(const std::vector<std::string> tasks);
+
     void addContactSet(const ContactSet& contacts);
     Task& getTask(const std::string& name);
     const Task& getTask(const std::string& name) const;

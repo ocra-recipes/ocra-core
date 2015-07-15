@@ -17,9 +17,9 @@ wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraMo
     stableName = name;
     usesYARP =true;
     if (usesYARP) {
-        std::string portPrefix = "/TM/"+name;
+        portName = "/TM/"+name+"/rpc:i";
 
-        rpcPort.open((portPrefix+"/rpc:i").c_str());
+        rpcPort.open(portName.c_str());
         rpcPort.setReader(processor);
 
         std::cout << "\n";
@@ -32,6 +32,7 @@ wOcraTaskManagerBase::~wOcraTaskManagerBase()
 {
     std::cout << "\t--> Closing ports" << std::endl;
     rpcPort.close();
+    task->disconnectFromController();
     std::cout << "\t--> Destroying " << stableName << std::endl;
 }
 
@@ -326,6 +327,12 @@ const double* wOcraTaskManagerBase::getCurrentState()
 bool wOcraTaskManagerBase::checkIfActivated()
 {
     return false;
+}
+
+
+std::string wOcraTaskManagerBase::getPortName()
+{
+    return portName;
 }
 
 }

@@ -82,5 +82,16 @@ namespace wocra
         return strVector;
     }
 
+    std::vector<std::string> wOcraTaskSequenceBase::getTaskPorts()
+    {
+        std::vector<std::string> strVector(taskManagers.size());
+        int i = 0;
+        for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++)
+        {
+            strVector[i] = it->second->getPortName();
+            i++;
+        }
+        return strVector;
+    }
 
 }
