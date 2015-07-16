@@ -12,6 +12,9 @@
 #include <yarp/os/RpcServer.h>
 #include <yarp/os/ConnectionReader.h>
 
+#include "wocra/Trajectory/wOcraTrajectory.h"
+
+
 namespace wocra
 {
 
@@ -30,7 +33,8 @@ class wOcraTaskManagerBase
 
         std::string getPortName();
 
-
+        void updateTrajectory(double time);
+        bool isFollowingTrajectory(){return followingTrajectory;}
 
         // For getting the task type
         virtual std::string getTaskManagerType();
@@ -61,8 +65,14 @@ class wOcraTaskManagerBase
         const std::string&              name;
         std::string                     stableName; //hack to avoid using name in compileOutgoingMessage()
 
-        //Generic double vector to store states:
         bool taskManagerActive;
+
+        bool usesTrajectory;
+        bool followingTrajectory;
+
+        wocra::wOcraTrajectory*     taskTrajectory;
+
+        //Generic double vector to store states:
 
         std::vector<double> currentStateVector, desiredStateVector, newDesiredStateVector;
 
@@ -103,6 +113,7 @@ class wOcraTaskManagerBase
 
         int stateDimension;
 
+        void setTrajectoryType(std::string trajType="MinJerk");
 
 
 };

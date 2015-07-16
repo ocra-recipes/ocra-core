@@ -5,18 +5,18 @@
 namespace wocra
 {
 
-wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::MatrixXd& _waypoints, bool _endsWithQuaternion):
-    wOcraTrajectory(_waypoints, _endsWithQuaternion){};
+// wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::MatrixXd& _waypoints, bool _endsWithQuaternion):
+//     wOcraTrajectory(_waypoints, _endsWithQuaternion){};
+//
+// wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(const Eigen::VectorXd& _startingVector, const Eigen::VectorXd& _endingVector, bool _endsWithQuaternion):
+//     wOcraTrajectory(_startingVector, _endingVector, _endsWithQuaternion){};
+//
+// wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::Displacementd& _startingDisplacement, Eigen::Displacementd& _endingDisplacement, bool _endsWithQuaternion):
+//     wOcraTrajectory(_startingDisplacement, _endingDisplacement, _endsWithQuaternion){};
+//
+// wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::Rotation3d& _startingOrientation, Eigen::Rotation3d& _endingOrientation, bool _endsWithQuaternion):
+//     wOcraTrajectory(_startingOrientation, _endingOrientation, _endsWithQuaternion){};
 
-wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(const Eigen::VectorXd& _startingVector, const Eigen::VectorXd& _endingVector, bool _endsWithQuaternion):
-    wOcraTrajectory(_startingVector, _endingVector, _endsWithQuaternion){};
-
-wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::Displacementd& _startingDisplacement, Eigen::Displacementd& _endingDisplacement, bool _endsWithQuaternion):
-    wOcraTrajectory(_startingDisplacement, _endingDisplacement, _endsWithQuaternion){};
-    
-wOcraLinearInterpolationTrajectory::wOcraLinearInterpolationTrajectory(Eigen::Rotation3d& _startingOrientation, Eigen::Rotation3d& _endingOrientation, bool _endsWithQuaternion):
-    wOcraTrajectory(_startingOrientation, _endingOrientation, _endsWithQuaternion){};
-       
 
 
 
@@ -36,12 +36,12 @@ Eigen::MatrixXd wOcraLinearInterpolationTrajectory::getDesiredValues(double _tim
         startTrigger = false;
         t0 = _time;
     }
-    
+
     Eigen::MatrixXd desiredValue = Eigen::MatrixXd::Zero(nDoF,TRAJ_DIM);
 
     double tau = (_time - t0) / pointToPointDuration;
 
- 
+
     if ((tau <= TAU_MAX) && (currentWaypointIndex<(nWaypoints-1)))
     {
         // Interpolate
@@ -54,7 +54,7 @@ Eigen::MatrixXd wOcraLinearInterpolationTrajectory::getDesiredValues(double _tim
             Eigen::Rotation3d qStart, qEnd;
             eigenVectorToQuaternion(waypoints.block((nDoF-QUATERNION_DIM),(currentWaypointIndex), QUATERNION_DIM, 1),  qStart);
             eigenVectorToQuaternion(waypoints.block((nDoF-QUATERNION_DIM),(currentWaypointIndex+1), QUATERNION_DIM, 1),  qEnd);
-            
+
             Eigen::Rotation3d interpolatedQuat = quaternionSlerp(tau, qStart, qEnd);
 
             Eigen::VectorXd interpolatedQuatVector = quaternionToEigenVector(interpolatedQuat);
@@ -71,6 +71,7 @@ Eigen::MatrixXd wOcraLinearInterpolationTrajectory::getDesiredValues(double _tim
     else{
         // Set to final waypoint if no more waypoints and duration achieved
         desiredValue.col(POS_INDEX) = waypoints.col(nWaypoints-1);
+        trajectoryFinished = true;
     }
 
 
@@ -93,26 +94,6 @@ Eigen::MatrixXd wOcraLinearInterpolationTrajectory::getDesiredValues(double _tim
 // }
 
 
-void wOcraLinearInterpolationTrajectory::generateTrajectory()
-{
-    // Approximate some duration between waypoints based an a velMax of 50cm/s
-    double velMax = 0.5; // m/s
-    double duration = 0.0;
-    for (int i=0; i<nWaypoints-1; i++)
-    {
-        double durationTemp = ((waypoints.col(i+1) - waypoints.col(i)) / velMax).maxCoeff();
-        duration = (durationTemp>duration) ? durationTemp : duration ;// if durTemp is now greater than the previous estimated duration then replace it.
-    }
-
-    wOcraLinearInterpolationTrajectory::generateTrajectory(duration);
-}
-
-
-void wOcraLinearInterpolationTrajectory::generateTrajectory(double _duration)
-{
-    pointToPointDuration = _duration;
-}
-
 
 
 
@@ -120,4 +101,3 @@ void wOcraLinearInterpolationTrajectory::generateTrajectory(double _duration)
 
 
 } //namespace wocra
-
