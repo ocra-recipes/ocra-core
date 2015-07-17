@@ -22,10 +22,12 @@ namespace wocra
     typedef struct
     {
         std::string taskName, taskType, segment;
-        double kp, kd, weight;
+        double kp, kd, weight, mu, margin;
+        bool usesYarp;
         std::string axes;
-        Eigen::VectorXd offset, desired;
+        Eigen::VectorXd desired;
         Eigen::VectorXi jointIndexes;
+        std::vector<Eigen::VectorXd> offset;
 
     }taskManagerArgs;
 
@@ -42,12 +44,10 @@ namespace wocra
 
             bool addTaskManagersToSequence(wOcraController& ctrl, const wOcraModel& model, wOcraTaskSequenceBase* sequence);
 
-            // bool parseTasksXML(const char* filePath);
             // bool parseTasksYarp(yarp::os::Bottle* yarpMessage);
             // bool xmlToYarp(const char* filePath, yarp::os::Bottle* yarpMessage);
             // bool yarpToXML(yarp::os::Bottle* yarpMessage, char* filePath);
 
-            // bool addTaskManagersToSequence();
 
 
 
@@ -59,6 +59,9 @@ namespace wocra
 
             wOcraTaskManagerBase* constructTaskManager(wOcraController& ctrl, const wOcraModel& model, std::vector<taskManagerArgs>::iterator argStructPtr);
 
+            Eigen::Displacementd eigenVectorToDisplacementd(Eigen::VectorXd& eigenVector);
+
+            std::vector<Eigen::Displacementd> eigenVectorToDisplacementd(std::vector<Eigen::VectorXd>& eigenVector);
 
     };
 

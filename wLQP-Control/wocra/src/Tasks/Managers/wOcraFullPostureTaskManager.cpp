@@ -112,6 +112,12 @@ void wOcraFullPostureTaskManager::setPosture(const Eigen::VectorXd& q, const Eig
     updateDesiredStateVector(q.data());
 }
 
+void wOcraFullPostureTaskManager::setDesiredState()
+{
+    Eigen::VectorXd newPosture = Eigen::VectorXd::Map(&newDesiredStateVector.front(), stateDimension);
+    setPosture(newPosture);
+}
+
 
 /** Sets the weight constant for this task
  *

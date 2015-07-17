@@ -53,15 +53,29 @@ namespace wocra
                             if (taskElem->QueryDoubleAttribute("kd", &currentTmArgs.kd)==TIXML_NO_ATTRIBUTE){currentTmArgs.kd=0.0;}
                             if (taskElem->QueryDoubleAttribute("weight", &currentTmArgs.weight)==TIXML_NO_ATTRIBUTE){currentTmArgs.weight=0.0;}
                             if (taskElem->Attribute("axes") != NULL){ currentTmArgs.axes = taskElem->Attribute("axes");}else{currentTmArgs.axes="XYZR";}
+                            if (taskElem->Attribute("usesYarp") != NULL){
+                                bool yarpBool;
+                                std::string yarpString = std::string(taskElem->Attribute("usesYarp"));
+                                if (yarpString=="true" || yarpString=="1") {
+                                    yarpBool = true;
+                                }
+                                else if (yarpString=="false" || yarpString=="0") {
+                                    yarpBool = false;
+                                }
+                                else {
+                                    yarpBool = true;
+                                }
+                                currentTmArgs.usesYarp = yarpBool;
+                            }else{currentTmArgs.usesYarp=true;}
                         }
 
                         else if( currentElem == "offset" ){
 
                             if (taskElem->GetText() != NULL)
-                                currentTmArgs.offset = stringToVectorXd(taskElem->GetText());
+                                currentTmArgs.offset.push_back(stringToVectorXd(taskElem->GetText()));
 
                             else
-                                currentTmArgs.offset = stringToVectorXd(getDisplacementArgs(taskElem));
+                                currentTmArgs.offset.push_back(stringToVectorXd(getDisplacementArgs(taskElem)));
 
                         }
 
@@ -244,7 +258,8 @@ namespace wocra
             std::cout << "kd: " << tmArgsVector[i].kd << std::endl;
             std::cout << "weight: " << tmArgsVector[i].weight << std::endl;
             std::cout << "axes: " << tmArgsVector[i].axes << std::endl;
-            std::cout << "offset: " << tmArgsVector[i].offset.transpose() << std::endl;
+            std::cout << "offset: " << std::endl;
+            for(int j=0; j<tmArgsVector[i].offset.size(); j++){std::cout << tmArgsVector[i].offset[j].transpose() << std::endl;}
             std::cout << "jointIndexes: " << tmArgsVector[i].jointIndexes.transpose() << std::endl;
             std::cout << "desired: " << tmArgsVector[i].desired.transpose() << std::endl;
 
@@ -309,19 +324,13 @@ namespace wocra
 
     wOcraTaskManagerBase* wOcraTaskParser::constructTaskManager(wOcraController& ctrl, const wOcraModel& model, std::vector<taskManagerArgs>::iterator argStructPtr)
     {
-        // argStructPtr->taskName,
-        // argStructPtr->kp,
-        // argStructPtr->kd,
-        // argStructPtr->weight,
-        // argStructPtr->axes,
-        // argStructPtr->segment,
-        // argStructPtr->offset,
-        // argStructPtr->desired,
-        // argStructPtr->jointIndexes,
 
         int sizeDof = model.nbInternalDofs();
         int sizeDesired = argStructPtr->desired.rows();
-        int sizeOffset = argStructPtr->offset.rows();
+        if (argStructPtr->offset.empty()) {
+            argStructPtr->offset.push_back(Eigen::VectorXd::Zero(3));
+        }
+        int sizeOffset = argStructPtr->offset[0].rows();
         int sizeJointIndexes = argStructPtr->jointIndexes.rows();
 
         wOcraTaskManagerBase* newTaskManager;
@@ -337,27 +346,31 @@ namespace wocra
             return newTaskManager;
         }
 
-        // else if(argStructPtr->taskType == "wOcraContactSetTaskManager")
-        // {
-        //     newTaskManager = new wOcraContactSetTaskManager(ctrl, model,
-        //                                             argStructPtr->taskName,
-        //                                             argStructPtr->kp,
-        //                                             argStructPtr->kd,
-        //                                             argStructPtr->weight,
-        //                                             argStructPtr->desired);
-        //     return newTaskManager;
-        // }
-        //
-        // else if(argStructPtr->taskType == "wOcraContactTaskManager")
-        // {
-        //     newTaskManager = new wOcraContactTaskManager(ctrl, model,
-        //                                             argStructPtr->taskName,
-        //                                             argStructPtr->kp,
-        //                                             argStructPtr->kd,
-        //                                             argStructPtr->weight,
-        //                                             argStructPtr->desired);
-        //     return newTaskManager;
-        // }
+        else if(argStructPtr->taskType == "wOcraContactSetTaskManager")
+        {
+            newTaskManager = new wOcraContactSetTaskManager(ctrl, model,
+                                                    argStructPtr->taskName,
+                                                    argStructPtr->segment,
+                                                    eigenVectorToDisplacementd(argStructPtr->offset),
+                                                    argStructPtr->mu,
+                                                    argStructPtr->margin,
+                                                    argStructPtr->usesYarp);
+
+            return newTaskManager;
+        }
+
+        else if(argStructPtr->taskType == "wOcraContactTaskManager")
+        {
+
+            newTaskManager = new wOcraContactTaskManager(ctrl, model,
+                                                    argStructPtr->taskName,
+                                                    argStructPtr->segment,
+                                                    eigenVectorToDisplacementd(argStructPtr->offset.front()),
+                                                    argStructPtr->mu,
+                                                    argStructPtr->margin,
+                                                    argStructPtr->usesYarp);
+            return newTaskManager;
+        }
 
         else if(argStructPtr->taskType == "wOcraFullPostureTaskManager")
         {
@@ -423,7 +436,7 @@ namespace wocra
 
             if(sizeOffset!=3)
             {
-                argStructPtr->offset = Eigen::VectorXd::Zero(3);
+                argStructPtr->offset.front() = Eigen::VectorXd::Zero(3);
             }
 
             if (sizeDesired!=3)
@@ -431,7 +444,7 @@ namespace wocra
                 newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
-                                                        argStructPtr->offset,
+                                                        argStructPtr->offset.front(),
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
@@ -445,7 +458,7 @@ namespace wocra
                 newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
-                                                        argStructPtr->offset,
+                                                        argStructPtr->offset.front(),
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
@@ -493,19 +506,12 @@ namespace wocra
         else if(argStructPtr->taskType == "wOcraSegPoseTaskManager")
         {
 
-            if(sizeOffset!=7)
-            {
-                Eigen::VectorXd tmpDispVec = Eigen::VectorXd::Zero(7);
-                tmpDispVec(3) = 1.0; // fake a disp::Identity vector
-                argStructPtr->offset = tmpDispVec;
-            }
-
             if (sizeDesired!=7)
             {
                 newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
-                                                        Eigen::Displacementd(argStructPtr->offset.reverse().array()),
+                                                        eigenVectorToDisplacementd(argStructPtr->offset.front()),
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
@@ -519,12 +525,13 @@ namespace wocra
                 newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
-                                                        Eigen::Displacementd(argStructPtr->offset.reverse().array()),
+                                                        eigenVectorToDisplacementd(argStructPtr->offset.front()),
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
-                                                        Eigen::Displacementd(argStructPtr->desired.reverse().array()));
+                                                        eigenVectorToDisplacementd(argStructPtr->desired) );
+
                 return newTaskManager;
             }
         }
@@ -549,6 +556,31 @@ namespace wocra
 
     }
 
+
+    Eigen::Displacementd wOcraTaskParser::eigenVectorToDisplacementd(Eigen::VectorXd& eigenVector)
+    {
+        Eigen::VectorXd tmpVector = Eigen::VectorXd::Zero(7);
+        tmpVector(3) = 1.0;
+
+        if (eigenVector.rows()==3) {
+            tmpVector.head(3) = eigenVector;
+        }
+        else if (eigenVector.rows()==7) {
+            tmpVector = eigenVector;
+        }
+
+        return Eigen::Displacementd(tmpVector(0), tmpVector(1), tmpVector(2), tmpVector(3), tmpVector(4), tmpVector(5), tmpVector(6));
+    }
+
+    std::vector<Eigen::Displacementd> wOcraTaskParser::eigenVectorToDisplacementd(std::vector<Eigen::VectorXd>& eigenVector)
+    {
+        std::vector<Eigen::Displacementd> dispVec;
+        for(int i=0; i<eigenVector.size(); i++)
+        {
+            dispVec.push_back(eigenVectorToDisplacementd(eigenVector[i]));
+        }
+        return dispVec;
+    }
 
 
 

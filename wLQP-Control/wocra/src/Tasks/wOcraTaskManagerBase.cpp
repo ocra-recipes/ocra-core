@@ -310,6 +310,7 @@ std::string wOcraTaskManagerBase::printValidMessageTags()
     helpString += "getDimension: Prints the state dimension. No arguments expected.\n";
     helpString += "getType: Retrieve the Type of the task. No arguments expected.\n";
     helpString += "getName: Retrieve the Name of the task. No arguments expected.\n";
+    helpString += "useTrajectory: Automatically generate a trajectory to follow for new desired states. You can optionally specify the type of trajectory: MinJerk, LinInterp, Experimental.\n";
     helpString += "help: Prints all the valid commands. No arguments expected.\n";
 
     helpString += "\nTypical usage: [message tag] [message value(s)]\ne.g.  >> stiffness 20 damping 10 desired_state 1.0 2.0 2.0\n";

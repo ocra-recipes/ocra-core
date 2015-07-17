@@ -50,6 +50,7 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         double getDamping();
         void setWeight(double weight);
         double getWeight();
+        void setDesiredState();
 
         // Task error
         Eigen::VectorXd getTaskError();

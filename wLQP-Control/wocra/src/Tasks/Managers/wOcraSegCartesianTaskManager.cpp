@@ -171,12 +171,12 @@ void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position, con
 
 void wOcraSegCartesianTaskManager::setDesiredState()
 {
-    Eigen::Vector3d newPosition; //TODO:add newVel, newAcc later
-    for(int i=0;i<3;i++)
-    {
-        newPosition[i] = newDesiredStateVector[i];
-    }
-    setState(newPosition);
+    double * vectorStart = &newDesiredStateVector.front();
+    int dof = 3;
+    Eigen::VectorXd newPosition = Eigen::VectorXd::Map(vectorStart, dof);
+    Eigen::VectorXd newVelocity = Eigen::VectorXd::Map(vectorStart + dof, dof);
+    Eigen::VectorXd newAcceleration = Eigen::VectorXd::Map(vectorStart + (2*dof), dof);
+    setState(newPosition, newVelocity, newAcceleration);
 }
 
 

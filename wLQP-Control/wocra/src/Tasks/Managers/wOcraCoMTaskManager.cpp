@@ -105,6 +105,17 @@ void wOcraCoMTaskManager::setState(const Eigen::Vector3d& position, const Eigen:
     updateDesiredStateVector(eigenDesiredStateVector.data());
 }
 
+
+void wOcraCoMTaskManager::setDesiredState()
+{
+    double * vectorStart = &newDesiredStateVector.front();
+    int dof = 3;
+    Eigen::VectorXd newPosition = Eigen::VectorXd::Map(vectorStart, dof);
+    Eigen::VectorXd newVelocity = Eigen::VectorXd::Map(vectorStart + dof, dof);
+    Eigen::VectorXd newAcceleration = Eigen::VectorXd::Map(vectorStart + (2*dof), dof);
+    setState(newPosition, newVelocity, newAcceleration);
+}
+
 /** Sets the weight constant for this task
  *
  *  \param weight               Desired weight value

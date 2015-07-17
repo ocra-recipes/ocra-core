@@ -165,9 +165,23 @@ void wOcraSegPoseTaskManager::setState(const Eigen::Displacementd& pose, const E
     featDesFrame->setVelocity(velocity);
     featDesFrame->setAcceleration(acceleration);
 
-    eigenDesiredStateVector << featDesFrame->getPosition().getTranslation(), featDesFrame->getPosition().getRotation().w(), featDesFrame->getPosition().getRotation().x(), featDesFrame->getPosition().getRotation().y(), featDesFrame->getPosition().getRotation().z(), featDesFrame->getVelocity().getLinearVelocity(), featDesFrame->getVelocity().getAngularVelocity(), featDesFrame->getAcceleration().getLinearVelocity(), featDesFrame->getAcceleration().getAngularVelocity();
+    eigenDesiredStateVector << featDesFrame->getPosition().getTranslation(), featDesFrame->getPosition().getRotation().w(), featDesFrame->getPosition().getRotation().x(), featDesFrame->getPosition().getRotation().y(), featDesFrame->getPosition().getRotation().z(),  featDesFrame->getVelocity().getAngularVelocity(), featDesFrame->getVelocity().getLinearVelocity(), featDesFrame->getAcceleration().getAngularVelocity(), featDesFrame->getAcceleration().getLinearVelocity();
 
     updateDesiredStateVector(eigenDesiredStateVector.data());
+}
+
+void wOcraSegPoseTaskManager::setDesiredState()
+{
+    double * vectorStart = &newDesiredStateVector.front();
+    Eigen::VectorXd newPosition = Eigen::VectorXd::Map(vectorStart, 7);
+    Eigen::VectorXd newVelocity = Eigen::VectorXd::Map(vectorStart + 7, 6);
+    Eigen::VectorXd newAcceleration = Eigen::VectorXd::Map(vectorStart + (7+6), 6);
+
+    Eigen::Displacementd _newPosition = Eigen::Displacementd(newPosition(0), newPosition(1), newPosition(2),newPosition(3),newPosition(4),newPosition(5),newPosition(6));
+    Eigen::Twistd _newVelocity = Eigen::Twistd(newVelocity.array());
+    Eigen::Twistd _newAcceleration = Eigen::Twistd(newAcceleration.array());
+
+    setState(_newPosition, _newVelocity, _newAcceleration);
 }
 
 /** Sets the weight constant for this task
@@ -254,7 +268,7 @@ void wOcraSegPoseTaskManager::deactivate()
 
 const double* wOcraSegPoseTaskManager::getCurrentState()
 {
-    eigenCurrentStateVector << featFrame->getPosition().getTranslation(), featFrame->getPosition().getRotation().w(), featFrame->getPosition().getRotation().x(), featFrame->getPosition().getRotation().y(), featFrame->getPosition().getRotation().z(), featFrame->getVelocity().getLinearVelocity(), featFrame->getVelocity().getAngularVelocity(), featFrame->getAcceleration().getLinearVelocity(), featFrame->getAcceleration().getAngularVelocity();
+    eigenCurrentStateVector << featFrame->getPosition().getTranslation(), featFrame->getPosition().getRotation().w(), featFrame->getPosition().getRotation().x(), featFrame->getPosition().getRotation().y(), featFrame->getPosition().getRotation().z(),  featFrame->getVelocity().getAngularVelocity(), featFrame->getVelocity().getLinearVelocity(), featFrame->getAcceleration().getAngularVelocity(), featFrame->getAcceleration().getLinearVelocity();
 
     return eigenCurrentStateVector.data();
 }

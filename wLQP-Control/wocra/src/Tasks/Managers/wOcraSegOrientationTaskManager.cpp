@@ -94,6 +94,12 @@ void wOcraSegOrientationTaskManager::setOrientation(const Eigen::Rotation3d& ori
 
 }
 
+void wOcraSegOrientationTaskManager::setDesiredState()
+{
+    setOrientation(Eigen::Rotation3d(newDesiredStateVector[0], newDesiredStateVector[1], newDesiredStateVector[2], newDesiredStateVector[3]));
+}
+
+
 /** Sets the weight constant for this task
  *
  *  \param weight               Desired weight value
