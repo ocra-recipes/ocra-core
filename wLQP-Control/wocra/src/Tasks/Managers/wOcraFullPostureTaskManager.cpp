@@ -52,6 +52,13 @@ wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl,
     setPosture(_init_q);
 }
 
+wOcraFullPostureTaskManager::~wOcraFullPostureTaskManager()
+{
+    
+}
+
+
+
 /** Initializer function for constructor, sets up the frames, parameters, controller and task
  *
  */

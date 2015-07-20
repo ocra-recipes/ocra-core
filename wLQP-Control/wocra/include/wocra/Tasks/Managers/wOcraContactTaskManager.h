@@ -24,6 +24,7 @@ class wOcraContactTaskManager : public wOcraTaskManagerBase
 
         void activate();
         void deactivate();
+        virtual std::string getTaskManagerType();
 
         VectorXd getTaskError(); // Overrides base class function in this context
         double getTaskErrorNorm(); // Overrides base class function in this context

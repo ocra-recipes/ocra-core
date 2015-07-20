@@ -25,7 +25,7 @@ class wOcraTaskManagerBase
 {
     public:
         wOcraTaskManagerBase(wocra::wOcraController& ctrl, const wocra::wOcraModel& model, const std::string& name, bool usesYarpPorts=false);
-        ~wOcraTaskManagerBase();
+        virtual ~wOcraTaskManagerBase();
 
 
         virtual void activate() = 0;

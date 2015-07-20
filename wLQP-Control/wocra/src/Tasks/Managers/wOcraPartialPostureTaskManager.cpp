@@ -56,6 +56,12 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
     setPosture(_init_q);
 }
 
+wOcraPartialPostureTaskManager::~wOcraPartialPostureTaskManager()
+{
+    
+}
+
+
 /** Initializer function for constructor, sets up the frames, parameters, controller and task
  *
  */

@@ -114,6 +114,12 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
     setState(_poseDes);
 }
 
+wOcraSegPoseTaskManager::~wOcraSegPoseTaskManager()
+{
+    
+}
+
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */

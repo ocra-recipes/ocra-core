@@ -33,6 +33,7 @@ wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraMo
         std::cout << "\n";
     }
     stateDimension = 0; // should be overwritten by derived classes who have implemented the necessary functions.
+    task = NULL;
 }
 
 
@@ -40,7 +41,9 @@ wOcraTaskManagerBase::~wOcraTaskManagerBase()
 {
     std::cout << "\t--> Closing ports" << std::endl;
     rpcPort.close();
-    task->disconnectFromController();
+    if(task!=NULL){
+        task->disconnectFromController();
+    }
     std::cout << "\t--> Destroying " << stableName << std::endl;
 }
 

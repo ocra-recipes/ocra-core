@@ -41,6 +41,15 @@ wOcraContactSetTaskManager::wOcraContactSetTaskManager(wOcraController& _ctrl, c
 
 }
 
+wOcraContactSetTaskManager::~wOcraContactSetTaskManager()
+{
+    for (int i = 0; i < numContacts; i++)
+    {
+        tasks[i]->deactivate();
+        tasks[i]->disconnectFromController();
+    }
+}
+
 /** Activate function
  *
  *  Activates all the constraints (as constraints)
@@ -75,6 +84,11 @@ VectorXd wOcraContactSetTaskManager::getTaskError()
 double wOcraContactSetTaskManager::getTaskErrorNorm()
 {
     throw std::runtime_error("[wOcraContactSetTaskManager::getTaskErrorNorm()] Error is meaningless in this context or has not been computed");
+}
+
+std::string wOcraContactSetTaskManager::getTaskManagerType()
+{
+    return "wOcraContactSetTaskManager";
 }
 
 }

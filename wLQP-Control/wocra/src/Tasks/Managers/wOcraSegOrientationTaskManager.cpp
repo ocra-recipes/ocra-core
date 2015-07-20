@@ -52,6 +52,11 @@ wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& 
     setOrientation(_orientationDes);
 }
 
+wOcraSegOrientationTaskManager::~wOcraSegOrientationTaskManager()
+{
+    
+}
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */

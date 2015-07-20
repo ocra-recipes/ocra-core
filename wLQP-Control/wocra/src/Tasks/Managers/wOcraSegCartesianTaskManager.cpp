@@ -119,6 +119,11 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
 }
 
 
+wOcraSegCartesianTaskManager::~wOcraSegCartesianTaskManager()
+{
+    
+}
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */

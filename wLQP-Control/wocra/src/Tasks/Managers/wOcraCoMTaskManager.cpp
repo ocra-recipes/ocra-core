@@ -55,6 +55,11 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& ctrl, const Model& mod
 }
 */
 
+wOcraCoMTaskManager::~wOcraCoMTaskManager()
+{
+    
+}
+
 /** Initializer function for the wOcraCoMTaskManager constructor, sets up the frames, parameters, controller and task
  *
  */
