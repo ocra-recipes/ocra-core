@@ -118,15 +118,9 @@ void wOcraTrajectory::setWaypoints(Eigen::MatrixXd& _waypoints, bool _endsWithQu
     //Determine number of non-quaternion DoF
     nonRotationDof = (endsWithQuaternion) ? (nDoF - QUATERNION_DIM) : nDoF;
 
-    // std::cout<<"test 1\n";
-    // // std::ofstream dataFile;
-    // std::cout<<"test 2\n";
-    // // dataFile.open("/~/Desktop/trajectoryDataDump.txt", std::ios::trunc);
-    // std::cout<<"test 3\n";
-    // dataFile << "\n";//
-    // dataFile.close();
-
     setDuration();
+
+    initializeTrajectory();
 
 }
 
@@ -212,14 +206,17 @@ void wOcraTrajectory::getDesiredValues()
 void wOcraTrajectory::setDuration()
 {
     // Approximate some duration between waypoints based an a velMax of 50cm/s
-    double duration = 0.0;
+
+    // pointToPointDurationVector = Eigen::VectorXd::Constant(nWaypoints-1, 1.0);
+    pointToPointDurationVector.resize(nWaypoints-1);
+
     for (int i=0; i<nWaypoints-1; i++)
     {
-        double durationTemp = abs((waypoints.col(i+1) - waypoints.col(i)).norm() / maximumVelocity);
-        duration = (durationTemp>duration) ? durationTemp : duration ;// if durTemp is now greater than the previous estimated duration then replace it.
+        pointToPointDurationVector(i) = (waypoints.col(i+1) - waypoints.col(i)).norm() / maximumVelocity;
     }
 
-    setDuration(duration);
+    std::cout << "durationVector: " << pointToPointDurationVector.transpose() << std::endl;
+    setDuration(pointToPointDurationVector(0));
 }
 
 

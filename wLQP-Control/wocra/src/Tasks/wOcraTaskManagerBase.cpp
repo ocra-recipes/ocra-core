@@ -19,7 +19,7 @@ wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraMo
     stableName = name;
 
     //TODO: Make these args default to true in the individual task managers and add them to the task parser
-    usesYARP = true;
+    // usesYARP = true;
     usesTrajectory = false;
     setTrajectoryType();
     followingTrajectory = false;

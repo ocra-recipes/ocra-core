@@ -58,6 +58,7 @@ class wOcraTrajectory {
         void getDesiredValues(double time, Eigen::Displacementd& pos, Eigen::Twistd& vel, Eigen::Twistd& acc);
 
 
+
         Eigen::Rotation3d quaternionSlerp(double tau, Eigen::Rotation3d& qStart, Eigen::Rotation3d& qEnd);
 
         // Useful auxiliary functions
@@ -73,6 +74,8 @@ class wOcraTrajectory {
 
     protected:
 
+        virtual void initializeTrajectory(){/*do nothing unless overloaded in derived classes.*/};
+
         double maximumVelocity;
 
         //variables
@@ -84,7 +87,9 @@ class wOcraTrajectory {
         int currentWaypointIndex;           /**< used for keeping track of waypoints during execution */
         int nonRotationDof;                 /**< the number of DoF which are not part of the quaternion */
 
-        double pointToPointDuration;        /**< the total duration of the movement */
+
+        Eigen::VectorXd pointToPointDurationVector; /**< the estimated durations between points */
+        double pointToPointDuration;        /**< the total duration between the current two waypoints */
 
         bool trajectoryFinished;
         // double t0;

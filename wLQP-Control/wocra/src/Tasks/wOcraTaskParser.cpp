@@ -342,7 +342,8 @@ namespace wocra
                                                     argStructPtr->kp,
                                                     argStructPtr->kd,
                                                     argStructPtr->weight,
-                                                    argStructPtr->desired);
+                                                    argStructPtr->desired,
+                                                    argStructPtr->usesYarp);
             return newTaskManager;
         }
 
@@ -394,7 +395,8 @@ namespace wocra
                                                     argStructPtr->kp,
                                                     argStructPtr->kd,
                                                     argStructPtr->weight,
-                                                    argStructPtr->desired);
+                                                    argStructPtr->desired,
+                                                    argStructPtr->usesYarp);
 
             return newTaskManager;
         }
@@ -423,7 +425,8 @@ namespace wocra
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
-                                                        argStructPtr->desired);
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
             else
@@ -448,7 +451,8 @@ namespace wocra
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
-                                                        argStructPtr->weight);
+                                                        argStructPtr->weight,
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
 
@@ -463,7 +467,8 @@ namespace wocra
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
-                                                        argStructPtr->desired);
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
 
@@ -480,7 +485,8 @@ namespace wocra
                                                         argStructPtr->segment,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
-                                                        argStructPtr->weight);
+                                                        argStructPtr->weight,
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
 
@@ -498,7 +504,8 @@ namespace wocra
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
-                                                        Eigen::Rotation3d(argStructPtr->desired.data()));
+                                                        Eigen::Rotation3d(argStructPtr->desired.data()),
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
         }
@@ -515,7 +522,8 @@ namespace wocra
                                                         ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
-                                                        argStructPtr->weight);
+                                                        argStructPtr->weight,
+                                                        argStructPtr->usesYarp);
                 return newTaskManager;
             }
 
@@ -530,7 +538,8 @@ namespace wocra
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
-                                                        eigenVectorToDisplacementd(argStructPtr->desired) );
+                                                        eigenVectorToDisplacementd(argStructPtr->desired),
+                                                        argStructPtr->usesYarp );
 
                 return newTaskManager;
             }
@@ -538,13 +547,14 @@ namespace wocra
 
         // else if(argStructPtr->taskType == "wOcraVariableWeightsTaskManager")
         // {
-        //     newTaskManager = new wOcraVariableWeightsTaskManager(ctrl, model,
-        //                                             argStructPtr->taskName,
-        //                                             argStructPtr->kp,
-        //                                             argStructPtr->kd,
-        //                                             argStructPtr->weight,
-        //                                             argStructPtr->desired);
-        //     return newTaskManager;
+        //  newTaskManager = new wOcraVariableWeightsTaskManager(ctrl, model,
+        //                                          argStructPtr->taskName,
+        //                                          argStructPtr->kp,
+        //                                          argStructPtr->kd,
+        //                                          argStructPtr->weight,
+        //                                          argStructPtr->desired,
+        //                                          argStructPtr->usesYarp);
+        //  return newTaskManager;
         // }
 
         else
