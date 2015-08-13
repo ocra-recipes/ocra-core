@@ -121,7 +121,7 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
 
 wOcraSegCartesianTaskManager::~wOcraSegCartesianTaskManager()
 {
-    
+
 }
 
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
@@ -143,7 +143,7 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     task->setDamping(_damping);
     task->setWeight(_weight);
 
-    setStateDimension(9); //3 dof for pos vel and acc
+    setStateDimension(9, 3); //3 dof for pos vel and acc
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
 }

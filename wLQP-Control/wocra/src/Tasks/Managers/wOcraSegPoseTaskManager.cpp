@@ -116,7 +116,7 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
 
 wOcraSegPoseTaskManager::~wOcraSegPoseTaskManager()
 {
-    
+
 }
 
 
@@ -143,7 +143,7 @@ void wOcraSegPoseTaskManager::_init(const Eigen::Displacementd& _ref_LocalFrame,
     task->setDamping(_damping);
     task->setWeight(_weight);
 
-    setStateDimension(7+6+6); // dispd = 7 + 2*twistd = 6
+    setStateDimension(7+6+6, 7); // dispd = 7 + 2*twistd = 6
 
     // Set the desired state to the current pose of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)));

@@ -199,7 +199,7 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
             }
             if (usesTrajectory) {
                 updateCurrentStateVector(getCurrentState());
-                taskTrajectory->setWaypoints(currentStateVector, newDesiredStateVector);
+                taskTrajectory->setWaypoints(currentStateVector, newDesiredStateVector, waypointSelector);
                 followingTrajectory = true;
                 reply->addString("Starting Trajectory...");
             }
@@ -328,8 +328,9 @@ std::string wOcraTaskManagerBase::getTaskManagerType()
     return "[wOcraTaskManagerBase::getTaskManagerType()]: getTaskManagerType has not been implemented for this task manager.";
 }
 
-void wOcraTaskManagerBase::setStateDimension(int taskDimension)
+void wOcraTaskManagerBase::setStateDimension(int taskDimension, int waypointDimension)
 {
+    waypointSelector = waypointDimension;
     stateDimension = taskDimension;
     currentStateVector.resize(stateDimension);
     desiredStateVector.resize(stateDimension);

@@ -31,7 +31,7 @@ class wOcraTrajectory {
         void setMaxVelocity(double newMaxVel){maximumVelocity = newMaxVel;}
         double getMaxVelocity(){return maximumVelocity;}
 
-        void setWaypoints(const std::vector<double>& startingDoubleVec, const std::vector<double>& endingDoubleVec, bool endsWithQuaternion=false);
+        void setWaypoints(const std::vector<double>& startingDoubleVec, const std::vector<double>& endingDoubleVec, const int waypointSelector=0, bool endsWithQuaternion=false);
         void setWaypoints(const Eigen::VectorXd& startingVector, const Eigen::VectorXd& endingVector, bool endsWithQuaternion=false);
         void setWaypoints(Eigen::Displacementd& startingDisplacement, Eigen::Displacementd& endingDisplacement, bool endsWithQuaternion=true);
         void setWaypoints(Eigen::Rotation3d& startingOrientation, Eigen::Rotation3d& endingOrientation, bool endsWithQuaternion=true);
@@ -66,6 +66,7 @@ class wOcraTrajectory {
         Eigen::VectorXd quaternionToEigenVector(Eigen::Rotation3d& quat);
 
         bool eigenVectorToStdVector(const Eigen::VectorXd& dispVec, std::vector<double>& doubleVec);
+        bool eigenMatrixToStdVector(const Eigen::MatrixXd& dispMat, std::vector<double>& doubleVec);
         bool eigenVectorToDisplacement(const Eigen::VectorXd& dispVec, Eigen::Displacementd& disp);
         bool eigenVectorToQuaternion(const Eigen::VectorXd& quatVec, Eigen::Rotation3d& quat);
         bool eigenVectorToTwist(const Eigen::VectorXd& twistVec, Eigen::Twistd& twist);

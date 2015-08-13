@@ -78,6 +78,8 @@ class wOcraTaskManagerBase
 
         Eigen::VectorXd eigenCurrentStateVector, eigenDesiredStateVector;
 
+        int waypointSelector;
+
         virtual void setStiffness(double stiffness){ std::cout << "setStiffness() Not implemented" << std::endl; }
         virtual double getStiffness(){return 0.0;}
         virtual void setDamping(double damping){ std::cout << "setDamping() Not implemented" << std::endl; }
@@ -96,7 +98,7 @@ class wOcraTaskManagerBase
         void updateDesiredStateVector(const double* ptrToFirstIndex);
         void updateCurrentStateVector(const double* ptrToFirstIndex);
 
-        void setStateDimension(int taskDimension);
+        void setStateDimension(int taskDimension, int waypointDimension=0);
 
 
         // For parsing and compiling yarp messages.

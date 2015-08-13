@@ -25,14 +25,20 @@ wOcraTrajectory::~wOcraTrajectory()
     // std::cout << "\nDestroying trajectory object..." << std::endl;
 }
 
-void wOcraTrajectory::setWaypoints(const std::vector<double>& startingDoubleVec, const std::vector<double>& endingDoubleVec, bool _endsWithQuaternion)
+void wOcraTrajectory::setWaypoints(const std::vector<double>& startingDoubleVec, const std::vector<double>& endingDoubleVec, const int waypointSelector, bool _endsWithQuaternion)
 {
     // Make sure that the vectors are the same size
     if (startingDoubleVec.size() != endingDoubleVec.size())
         throw std::runtime_error(std::string("[wOcraTrajectory::setWaypoints()]: Starting vector and ending vector are not the same size."));
 
 
-    int _nRows = startingDoubleVec.size();
+    int _nRows;
+    if (waypointSelector>0) {
+        _nRows = waypointSelector;
+    }
+    else {
+        _nRows = startingDoubleVec.size();
+    }
     int _nCols = 2;
 
     Eigen::MatrixXd _waypoints(_nRows, _nCols);
@@ -128,7 +134,8 @@ void wOcraTrajectory::getDesiredValues(double _time, std::vector<double>& _desir
 {
     Eigen::MatrixXd desVals = getDesiredValues(_time);
 
-    eigenVectorToStdVector(desVals.col(POS_INDEX), _desiredVector);
+    // eigenVectorToStdVector(desVals.col(POS_INDEX), _desiredVector);
+    eigenMatrixToStdVector(desVals, _desiredVector);
 }
 
 
@@ -215,7 +222,7 @@ void wOcraTrajectory::setDuration()
         pointToPointDurationVector(i) = (waypoints.col(i+1) - waypoints.col(i)).norm() / maximumVelocity;
     }
 
-    std::cout << "durationVector: " << pointToPointDurationVector.transpose() << std::endl;
+    // std::cout << "durationVector: " << pointToPointDurationVector.transpose() << std::endl;
     setDuration(pointToPointDurationVector(0));
 }
 
@@ -287,6 +294,21 @@ bool wOcraTrajectory::eigenVectorToStdVector(const Eigen::VectorXd& _dispVec, st
     }
     else
         return false;
+}
+
+bool wOcraTrajectory::eigenMatrixToStdVector(const Eigen::MatrixXd& _dispMat, std::vector<double>& _doubleVec)
+{
+    int nValues = _dispMat.size();
+    if (nValues == _doubleVec.size()) {
+        const double *eigPtr = _dispMat.data();
+        for(int i=0; i<nValues; i++){
+            _doubleVec[i] = *eigPtr;
+            eigPtr++;
+        }
+    }
+    else {
+        // std::cout << "[ERROR] (wOcraTrajectory::eigenMatrixToStdVector): Matrix size and vector size do not match." << std::endl;
+    }
 }
 
 
