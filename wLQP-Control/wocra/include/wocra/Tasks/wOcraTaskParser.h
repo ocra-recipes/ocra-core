@@ -24,7 +24,7 @@ namespace wocra
         std::string taskName, taskType, segment;
         double kp, kd, weight, mu, margin;
         bool usesYarp;
-        std::string axes;
+        int axes;
         Eigen::VectorXd desired;
         Eigen::VectorXi jointIndexes;
         std::vector<Eigen::VectorXd> offset;

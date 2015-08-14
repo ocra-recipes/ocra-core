@@ -52,7 +52,7 @@ namespace wocra
                             if (taskElem->QueryDoubleAttribute("kp", &currentTmArgs.kp)==TIXML_NO_ATTRIBUTE){currentTmArgs.kp=0.0;}
                             if (taskElem->QueryDoubleAttribute("kd", &currentTmArgs.kd)==TIXML_NO_ATTRIBUTE){currentTmArgs.kd=0.0;}
                             if (taskElem->QueryDoubleAttribute("weight", &currentTmArgs.weight)==TIXML_NO_ATTRIBUTE){currentTmArgs.weight=0.0;}
-                            if (taskElem->Attribute("axes") != NULL){ currentTmArgs.axes = taskElem->Attribute("axes");}else{currentTmArgs.axes="XYZR";}
+                            if (taskElem->QueryIntAttribute("axes", &currentTmArgs.axes)==TIXML_NO_ATTRIBUTE){currentTmArgs.axes=ocra::XYZ;}
                             if (taskElem->Attribute("usesYarp") != NULL){
                                 bool yarpBool;
                                 std::string yarpString = std::string(taskElem->Attribute("usesYarp"));
@@ -339,6 +339,7 @@ namespace wocra
         {
             newTaskManager = new wOcraCoMTaskManager(ctrl, model,
                                                     argStructPtr->taskName,
+                                                    argStructPtr->axes,//ocra::XYZ,
                                                     argStructPtr->kp,
                                                     argStructPtr->kd,
                                                     argStructPtr->weight,
@@ -448,7 +449,7 @@ namespace wocra
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
                                                         argStructPtr->offset.front(),
-                                                        ocra::XYZ,
+                                                        argStructPtr->axes,//ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
@@ -463,7 +464,7 @@ namespace wocra
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
                                                         argStructPtr->offset.front(),
-                                                        ocra::XYZ,
+                                                        argStructPtr->axes,//ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
@@ -519,7 +520,7 @@ namespace wocra
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
                                                         eigenVectorToDisplacementd(argStructPtr->offset.front()),
-                                                        ocra::XYZ,
+                                                        argStructPtr->axes,//ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
@@ -534,7 +535,7 @@ namespace wocra
                                                         argStructPtr->taskName,
                                                         argStructPtr->segment,
                                                         eigenVectorToDisplacementd(argStructPtr->offset.front()),
-                                                        ocra::XYZ,
+                                                        argStructPtr->axes,//ocra::XYZ,
                                                         argStructPtr->kp,
                                                         argStructPtr->kd,
                                                         argStructPtr->weight,
