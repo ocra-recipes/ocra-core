@@ -50,12 +50,13 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         double getDamping();
         void setWeight(double weight);
         double getWeight();
+        void setDesiredState();
 
         // Task error
         Eigen::VectorXd getTaskError();
 
     private:
-        wocra::wOcraTask*          task;
+        // wocra::wOcraTask*          task;
 
         ocra::PositionFeature*           feat;
         ocra::CoMFrame*                  featFrame;

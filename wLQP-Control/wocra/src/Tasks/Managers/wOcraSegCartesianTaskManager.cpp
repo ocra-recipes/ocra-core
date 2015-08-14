@@ -119,6 +119,11 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
 }
 
 
+wOcraSegCartesianTaskManager::~wOcraSegCartesianTaskManager()
+{
+
+}
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */
@@ -138,7 +143,7 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     task->setDamping(_damping);
     task->setWeight(_weight);
 
-    setStateDimension(9); //3 dof for pos vel and acc
+    setStateDimension(9, 3); //3 dof for pos vel and acc
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
 }
@@ -171,12 +176,12 @@ void wOcraSegCartesianTaskManager::setState(const Eigen::Vector3d& position, con
 
 void wOcraSegCartesianTaskManager::setDesiredState()
 {
-    Eigen::Vector3d newPosition; //TODO:add newVel, newAcc later
-    for(int i=0;i<3;i++)
-    {
-        newPosition[i] = newDesiredStateVector[i];
-    }
-    setState(newPosition);
+    double * vectorStart = &newDesiredStateVector.front();
+    int dof = 3;
+    Eigen::VectorXd newPosition = Eigen::VectorXd::Map(vectorStart, dof);
+    Eigen::VectorXd newVelocity = Eigen::VectorXd::Map(vectorStart + dof, dof);
+    Eigen::VectorXd newAcceleration = Eigen::VectorXd::Map(vectorStart + (2*dof), dof);
+    setState(newPosition, newVelocity, newAcceleration);
 }
 
 

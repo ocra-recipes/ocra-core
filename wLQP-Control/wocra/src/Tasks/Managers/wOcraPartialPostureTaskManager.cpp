@@ -56,6 +56,12 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
     setPosture(_init_q);
 }
 
+wOcraPartialPostureTaskManager::~wOcraPartialPostureTaskManager()
+{
+    
+}
+
+
 /** Initializer function for constructor, sets up the frames, parameters, controller and task
  *
  */
@@ -124,6 +130,12 @@ void wOcraPartialPostureTaskManager::setPosture(Eigen::VectorXd& q, Eigen::Vecto
     featDesState->set_qddot(qddot);
 }
 
+void wOcraPartialPostureTaskManager::setDesiredState()
+{
+    Eigen::VectorXd newPosture = Eigen::VectorXd::Map(&newDesiredStateVector.front(), stateDimension);
+    setPosture(newPosture);
+}
+
 
 /** Activate function
  *
@@ -158,6 +170,44 @@ double wOcraPartialPostureTaskManager::getWeight()
 {
     Eigen::VectorXd weights = task->getWeight();
     return weights[0];
+}
+
+/** Sets the stiffness for this task
+ *
+ * \param stiffness             Desired stiffness
+ */
+void wOcraPartialPostureTaskManager::setStiffness(double stiffness)
+{
+    task->setStiffness(stiffness);
+}
+
+/** Gets the stiffness constant for this task
+ *
+ *  \return                     The stiffness for this task
+ */
+double wOcraPartialPostureTaskManager::getStiffness()
+{
+    Eigen::MatrixXd K = task->getStiffness();
+    return K(0, 0);
+}
+
+/** Sets the damping for this task
+ *
+ * \param damping               Desired damping
+ */
+void wOcraPartialPostureTaskManager::setDamping(double damping)
+{
+    task->setDamping(damping);
+}
+
+/** Gets the damping constant for this task
+ *
+ *  \return                     The damping for this task
+ */
+double wOcraPartialPostureTaskManager::getDamping()
+{
+    Eigen::MatrixXd C = task->getDamping();
+    return C(0, 0);
 }
 
 const double* wOcraPartialPostureTaskManager::getCurrentState()

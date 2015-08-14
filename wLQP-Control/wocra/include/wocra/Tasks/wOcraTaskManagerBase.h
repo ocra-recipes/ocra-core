@@ -12,6 +12,9 @@
 #include <yarp/os/RpcServer.h>
 #include <yarp/os/ConnectionReader.h>
 
+#include "wocra/Trajectory/wOcraTrajectory.h"
+
+
 namespace wocra
 {
 
@@ -22,14 +25,16 @@ class wOcraTaskManagerBase
 {
     public:
         wOcraTaskManagerBase(wocra::wOcraController& ctrl, const wocra::wOcraModel& model, const std::string& name, bool usesYarpPorts=false);
-        ~wOcraTaskManagerBase();
+        virtual ~wOcraTaskManagerBase();
 
 
         virtual void activate() = 0;
         virtual void deactivate() = 0;
 
+        std::string getPortName();
 
-
+        void updateTrajectory(double time);
+        bool isFollowingTrajectory(){return followingTrajectory;}
 
         // For getting the task type
         virtual std::string getTaskManagerType();
@@ -52,17 +57,28 @@ class wOcraTaskManagerBase
 
 
     protected:
+        wocra::wOcraTask*              task;
+
+
         wocra::wOcraController&        ctrl;
         const wocra::wOcraModel&       model;
         const std::string&              name;
         std::string                     stableName; //hack to avoid using name in compileOutgoingMessage()
 
-        //Generic double vector to store states:
         bool taskManagerActive;
+
+        bool usesTrajectory;
+        bool followingTrajectory;
+
+        wocra::wOcraTrajectory*     taskTrajectory;
+
+        //Generic double vector to store states:
 
         std::vector<double> currentStateVector, desiredStateVector, newDesiredStateVector;
 
         Eigen::VectorXd eigenCurrentStateVector, eigenDesiredStateVector;
+
+        int waypointSelector;
 
         virtual void setStiffness(double stiffness){ std::cout << "setStiffness() Not implemented" << std::endl; }
         virtual double getStiffness(){return 0.0;}
@@ -82,7 +98,7 @@ class wOcraTaskManagerBase
         void updateDesiredStateVector(const double* ptrToFirstIndex);
         void updateCurrentStateVector(const double* ptrToFirstIndex);
 
-        void setStateDimension(int taskDimension);
+        void setStateDimension(int taskDimension, int waypointDimension=0);
 
 
         // For parsing and compiling yarp messages.
@@ -94,10 +110,12 @@ class wOcraTaskManagerBase
         bool usesYARP;
         yarp::os::Network yarp;
         yarp::os::RpcServer rpcPort;
+        std::string portName;
         DataProcessor processor;
 
         int stateDimension;
 
+        void setTrajectoryType(std::string trajType="MinJerk");
 
 
 };

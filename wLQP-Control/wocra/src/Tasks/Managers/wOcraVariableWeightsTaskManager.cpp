@@ -114,6 +114,13 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
 }
 
 
+wOcraVariableWeightsTaskManager::~wOcraVariableWeightsTaskManager()
+{
+    
+}
+
+
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */

@@ -56,7 +56,7 @@ class wOcraSegCartesianTaskManager : public wOcraTaskManagerBase
 
 
     private:
-        wocra::wOcraTask*              task;
+        // wocra::wOcraTask*              task;
 
         const std::string&              segmentName;
         ocra::ECartesianDof              axes;

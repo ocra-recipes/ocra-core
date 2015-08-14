@@ -55,6 +55,11 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& ctrl, const Model& mod
 }
 */
 
+wOcraCoMTaskManager::~wOcraCoMTaskManager()
+{
+
+}
+
 /** Initializer function for the wOcraCoMTaskManager constructor, sets up the frames, parameters, controller and task
  *
  */
@@ -74,7 +79,7 @@ void wOcraCoMTaskManager::_init(double stiffness, double damping, double weight)
     task->setWeight(weight);
     task->activateAsObjective();
 
-    setStateDimension(9); //3 dof for pos vel and acc
+    setStateDimension(9, 3); //3 dof for pos vel and acc
 
     // Set the desired state to the current position of the segment with 0 vel or acc
     setState(model.getCoMPosition());
@@ -103,6 +108,17 @@ void wOcraCoMTaskManager::setState(const Eigen::Vector3d& position, const Eigen:
 
     eigenDesiredStateVector << position, velocity, acceleration;
     updateDesiredStateVector(eigenDesiredStateVector.data());
+}
+
+
+void wOcraCoMTaskManager::setDesiredState()
+{
+    double * vectorStart = &newDesiredStateVector.front();
+    int dof = 3;
+    Eigen::VectorXd newPosition = Eigen::VectorXd::Map(vectorStart, dof);
+    Eigen::VectorXd newVelocity = Eigen::VectorXd::Map(vectorStart + dof, dof);
+    Eigen::VectorXd newAcceleration = Eigen::VectorXd::Map(vectorStart + (2*dof), dof);
+    setState(newPosition, newVelocity, newAcceleration);
 }
 
 /** Sets the weight constant for this task

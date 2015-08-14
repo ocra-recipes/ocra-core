@@ -52,6 +52,11 @@ wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& 
     setOrientation(_orientationDes);
 }
 
+wOcraSegOrientationTaskManager::~wOcraSegOrientationTaskManager()
+{
+    
+}
+
 /** Initializer function for the constructor, sets up the frames, parameters, controller and task
  *
  */
@@ -93,6 +98,12 @@ void wOcraSegOrientationTaskManager::setOrientation(const Eigen::Rotation3d& ori
     updateDesiredStateVector(eigenDesiredStateVector.data());
 
 }
+
+void wOcraSegOrientationTaskManager::setDesiredState()
+{
+    setOrientation(Eigen::Rotation3d(newDesiredStateVector[0], newDesiredStateVector[1], newDesiredStateVector[2], newDesiredStateVector[3]));
+}
+
 
 /** Sets the weight constant for this task
  *

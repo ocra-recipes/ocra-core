@@ -27,6 +27,11 @@ wOcraContactTaskManager::wOcraContactTaskManager(wOcraController& _ctrl, const w
     task->activateAsConstraint();
 }
 
+wOcraContactTaskManager::~wOcraContactTaskManager()
+{
+    
+}
+
 /** Activate function
  *
  *  Activates the constraint
@@ -55,6 +60,11 @@ VectorXd wOcraContactTaskManager::getTaskError()
 double wOcraContactTaskManager::getTaskErrorNorm()
 {
     throw std::runtime_error("[wOcraContactTaskManager::getTaskErrorNorm()] Error is meaningless in this context or has not been computed");
+}
+
+std::string wOcraContactTaskManager::getTaskManagerType()
+{
+    return "wOcraContactTaskManager";
 }
 
 

@@ -36,6 +36,7 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
         double getDamping();
         void setWeight(double weight);
         double getWeight();
+        void setDesiredState();
 
         // Task error
         Eigen::VectorXd getTaskError();
@@ -47,7 +48,7 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
 
 
     private:
-        wocra::wOcraTask*              task;
+        // wocra::wOcraTask*              task;
         const std::string&              segmentName;
 
         ocra::OrientationFeature*        feat;

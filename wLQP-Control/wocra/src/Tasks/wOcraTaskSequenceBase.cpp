@@ -17,6 +17,14 @@ namespace wocra
 
     void wOcraTaskSequenceBase::update(double time, wocra::wOcraModel& state, void** args)
     {
+        for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++)
+        {
+            if(it->second->isFollowingTrajectory())
+            {
+                it->second->updateTrajectory(time);
+            }
+        }
+
         // Run the custom doUpdate function of the cpp Sequences for hard coded control logic:
         doUpdate(time, state, args);
     }
@@ -82,5 +90,16 @@ namespace wocra
         return strVector;
     }
 
+    std::vector<std::string> wOcraTaskSequenceBase::getTaskPorts()
+    {
+        std::vector<std::string> strVector(taskManagers.size());
+        int i = 0;
+        for (tmIterator it = taskManagers.begin(); it != taskManagers.end(); it++)
+        {
+            strVector[i] = it->second->getPortName();
+            i++;
+        }
+        return strVector;
+    }
 
 }

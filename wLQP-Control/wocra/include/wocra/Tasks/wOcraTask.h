@@ -81,12 +81,14 @@ public:
 
     const Eigen::VectorXd& getComputedForce() const;
 
+    void disconnectFromController();
+
 
     //------------------------ friendship ------------------------//
 protected:
     friend class wOcraController;    //Only the wOcraController should know about the following functions
     void connectToController(wOcraSolver& _solver, const wOcraDynamicFunction& dynamicEquation, bool useReducedProblem);
-    void disconnectFromController();
+    // void disconnectFromController();
     void update();
 
 
@@ -134,4 +136,3 @@ private:
 
 
 #endif
-

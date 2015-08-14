@@ -34,6 +34,7 @@ namespace wocra
             bool removeTaskManager(std::string keyValue);
             bool clearSequence();
             std::vector<std::string> getTaskList();
+            std::vector<std::string> getTaskPorts();
 
 
 

@@ -30,8 +30,16 @@ class wOcraPartialPostureTaskManager : public wOcraTaskManagerBase
 /*
         void setStiffnessDamping(double stiffness, double damping);
 */
+
+        void setStiffness(double stiffness);
+        double getStiffness();
+        void setDamping(double damping);
+        double getDamping();
         void setWeight(double weight);
         double getWeight();
+        void setDesiredState();
+
+
         void activate();
         void deactivate();
 
@@ -41,7 +49,7 @@ class wOcraPartialPostureTaskManager : public wOcraTaskManagerBase
         virtual bool checkIfActivated();
 
     private:
-        wocra::wOcraTask*                      task;
+        // wocra::wOcraTask*                      task;
         wocra::PartialStateFeature*           feat;
         wocra::PartialModelState*             featState;
 

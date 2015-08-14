@@ -1,6 +1,8 @@
 #include "wocra/Tasks/wOcraTaskManagerBase.h"
 
-#define BASE_MESSAGE_SIZE 12
+
+#include "wocra/Trajectory/wOcraMinimumJerkTrajectory.h"
+#include "wocra/Trajectory/wOcraLinearInterpolationTrajectory.h"
 
 namespace wocra
 {
@@ -15,16 +17,23 @@ wOcraTaskManagerBase::wOcraTaskManagerBase(wOcraController& _ctrl, const wOcraMo
     : ctrl(_ctrl), model(_model), name(_taskName), usesYARP(_usesYarpPorts), processor(*this)
 {
     stableName = name;
-    usesYARP =true;
-    if (usesYARP) {
-        std::string portPrefix = "/TM/"+name;
 
-        rpcPort.open((portPrefix+"/rpc:i").c_str());
+    //TODO: Make these args default to true in the individual task managers and add them to the task parser
+    // usesYARP = true;
+    usesTrajectory = false;
+    setTrajectoryType();
+    followingTrajectory = false;
+
+    if (usesYARP) {
+        portName = "/TM/"+name+"/rpc:i";
+
+        rpcPort.open(portName.c_str());
         rpcPort.setReader(processor);
 
         std::cout << "\n";
     }
     stateDimension = 0; // should be overwritten by derived classes who have implemented the necessary functions.
+    task = NULL;
 }
 
 
@@ -32,6 +41,9 @@ wOcraTaskManagerBase::~wOcraTaskManagerBase()
 {
     std::cout << "\t--> Closing ports" << std::endl;
     rpcPort.close();
+    if(task!=NULL){
+        task->disconnectFromController();
+    }
     std::cout << "\t--> Destroying " << stableName << std::endl;
 }
 
@@ -151,6 +163,29 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
             i++;
         }
 
+        else if (msgTag == "useTrajectory")
+        {
+            i++;
+            usesTrajectory = true;
+            if(!input->get(i).asString().empty()){
+                setTrajectoryType(input->get(i).asString());
+                i++;
+            }else{
+                setTrajectoryType();
+            }
+            reply->addString("Using Trajectory");
+        }
+
+        else if (msgTag == "setMaxVelocity")
+        {
+            i++;
+            taskTrajectory->setMaxVelocity(input->get(i).asDouble());
+            reply->addString("maxVel:");
+            reply->addDouble(taskTrajectory->getMaxVelocity());
+            i++;
+        }
+
+
         // Desired State
         else if (msgTag == "setDesired")
         {
@@ -162,12 +197,19 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
                 newDesiredStateVector[k] = input->get(i).asDouble(); //make sure there are no NULL entries
                 i++; k++;
             }
-            setDesiredState(); // constructs the appropropriate state inputs
+            if (usesTrajectory) {
+                updateCurrentStateVector(getCurrentState());
+                taskTrajectory->setWaypoints(currentStateVector, newDesiredStateVector, waypointSelector);
+                followingTrajectory = true;
+                reply->addString("Starting Trajectory...");
+            }
 
-
-            reply->addString("Desired:");
-            for (int j=0; j < stateDimension; j++){
-                reply->addDouble(desiredStateVector[j]);
+            else{
+                setDesiredState(); // constructs the appropropriate state inputs
+                reply->addString("Desired:");
+                for (int j=0; j < stateDimension; j++){
+                    reply->addDouble(desiredStateVector[j]);
+                }
             }
             i++;
         }
@@ -271,6 +313,7 @@ std::string wOcraTaskManagerBase::printValidMessageTags()
     helpString += "getDimension: Prints the state dimension. No arguments expected.\n";
     helpString += "getType: Retrieve the Type of the task. No arguments expected.\n";
     helpString += "getName: Retrieve the Name of the task. No arguments expected.\n";
+    helpString += "useTrajectory: Automatically generate a trajectory to follow for new desired states. You can optionally specify the type of trajectory: MinJerk, LinInterp, Experimental.\n";
     helpString += "help: Prints all the valid commands. No arguments expected.\n";
 
     helpString += "\nTypical usage: [message tag] [message value(s)]\ne.g.  >> stiffness 20 damping 10 desired_state 1.0 2.0 2.0\n";
@@ -285,8 +328,9 @@ std::string wOcraTaskManagerBase::getTaskManagerType()
     return "[wOcraTaskManagerBase::getTaskManagerType()]: getTaskManagerType has not been implemented for this task manager.";
 }
 
-void wOcraTaskManagerBase::setStateDimension(int taskDimension)
+void wOcraTaskManagerBase::setStateDimension(int taskDimension, int waypointDimension)
 {
+    waypointSelector = waypointDimension;
     stateDimension = taskDimension;
     currentStateVector.resize(stateDimension);
     desiredStateVector.resize(stateDimension);
@@ -326,6 +370,35 @@ const double* wOcraTaskManagerBase::getCurrentState()
 bool wOcraTaskManagerBase::checkIfActivated()
 {
     return false;
+}
+
+
+std::string wOcraTaskManagerBase::getPortName()
+{
+    return portName;
+}
+
+void wOcraTaskManagerBase::setTrajectoryType(std::string trajType)
+{
+    if (trajType=="MinJerk") {
+        taskTrajectory = new wOcraMinimumJerkTrajectory();
+    }
+    else if (trajType=="LinInterp") {
+        taskTrajectory = new wOcraLinearInterpolationTrajectory();
+    }
+    // else if (trajType == "Experimental"){
+    //     taskTrajectory = new wOcraExperimentalTrajectory();
+    // }
+    else {
+        taskTrajectory = new wOcraMinimumJerkTrajectory();
+    }
+}
+
+void wOcraTaskManagerBase::updateTrajectory(double time)
+{
+    taskTrajectory->getDesiredValues(time, newDesiredStateVector);
+    setDesiredState();
+    followingTrajectory = !taskTrajectory->isFinished();
 }
 
 }

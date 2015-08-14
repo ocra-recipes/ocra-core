@@ -52,6 +52,13 @@ wOcraFullPostureTaskManager::wOcraFullPostureTaskManager(wOcraController& _ctrl,
     setPosture(_init_q);
 }
 
+wOcraFullPostureTaskManager::~wOcraFullPostureTaskManager()
+{
+    
+}
+
+
+
 /** Initializer function for constructor, sets up the frames, parameters, controller and task
  *
  */
@@ -110,6 +117,12 @@ void wOcraFullPostureTaskManager::setPosture(const Eigen::VectorXd& q, const Eig
 
     //TODO: Need to include dq and ddq. Adjust stateDimension accordingly.
     updateDesiredStateVector(q.data());
+}
+
+void wOcraFullPostureTaskManager::setDesiredState()
+{
+    Eigen::VectorXd newPosture = Eigen::VectorXd::Map(&newDesiredStateVector.front(), stateDimension);
+    setPosture(newPosture);
 }
 
 
