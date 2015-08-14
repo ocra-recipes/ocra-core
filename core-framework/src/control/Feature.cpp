@@ -83,26 +83,29 @@ namespace ocra
   {
     const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
 
-    // first compute the linear velocity error in the mobile frame
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
-    const Vector3d eff = pimpl->controlFrame.getWrench().getForce() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getWrench().getForce();
+//    // first compute the linear velocity error in the mobile frame
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
+//    const Vector3d eff = pimpl->controlFrame.getWrench().getForce() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getWrench().getForce();
 
-    // then project it on the controlled axes
-    pimpl->effort = getSpaceTransform() * eff;
+//    // then project it on the controlled axes
+//    pimpl->effort = getSpaceTransform() * eff;
     
+    pimpl->effort = pimpl->u.transpose() * (pimpl->controlFrame.getWrench().getForce() - sdes.pimpl->controlFrame.getWrench().getForce());
+
     return pimpl->effort;
   }
 
   const VectorXd& PositionFeature::computeEffort() const
   {
-    // first compute the linear velocity error in the mobile frame
-    const Vector3d eff = pimpl->controlFrame.getWrench().getForce();
+//    // first compute the linear velocity error in the mobile frame
+//    const Vector3d eff = pimpl->controlFrame.getWrench().getForce();
 
-    // then project it on the controlled axes
-    pimpl->effort = getSpaceTransform() * eff;
+//    // then project it on the controlled axes
+//    pimpl->effort = getSpaceTransform() * eff;
     
+    pimpl->effort = pimpl->u.transpose() * pimpl->controlFrame.getWrench().getForce();
     return pimpl->effort;
   }
 
@@ -110,20 +113,23 @@ namespace ocra
   {
     const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
 
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
-    const VectorXd acc = pimpl->controlFrame.getAcceleration().getLinearVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getAcceleration().getLinearVelocity();
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
+//    const VectorXd acc = pimpl->controlFrame.getAcceleration().getLinearVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getAcceleration().getLinearVelocity();
 
-    pimpl->acceleration = getSpaceTransform() * acc;
+//    pimpl->acceleration = getSpaceTransform() * acc;
 
+    pimpl->acceleration = pimpl->u.transpose() * (pimpl->controlFrame.getAcceleration().getLinearVelocity() - sdes.pimpl->controlFrame.getAcceleration().getLinearVelocity());
     return pimpl->acceleration;
   }
 
   const VectorXd& PositionFeature::computeAcceleration() const
   {
-    const VectorXd acc = pimpl->controlFrame.getAcceleration().getLinearVelocity();
-    pimpl->acceleration = getSpaceTransform() * acc;
+//    const VectorXd acc = pimpl->controlFrame.getAcceleration().getLinearVelocity();
+//    pimpl->acceleration = getSpaceTransform() * acc;
+
+    pimpl->acceleration = pimpl->u.transpose() * pimpl->controlFrame.getAcceleration().getLinearVelocity();
     return pimpl->acceleration;
   }
 
@@ -131,25 +137,28 @@ namespace ocra
   {
     const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
 
-    // first compute the position error in the mobile frame
-    const Vector3d e0 = pimpl->controlFrame.getPosition().getTranslation() - sdes.pimpl->controlFrame.getPosition().getTranslation();
-    const Vector3d e_in_r = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
+////    // first compute the position error in the mobile frame
+//    const Vector3d e0 = pimpl->controlFrame.getPosition().getTranslation() - sdes.pimpl->controlFrame.getPosition().getTranslation();
+//    const Vector3d e_in_r = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
 
-    // then project it on the controlled axes
-    pimpl->error = getSpaceTransform() * e_in_r;
+//    // then project it on the controlled axes
+//    pimpl->error = getSpaceTransform() * e_in_r;
+
+    pimpl->error = pimpl->u.transpose() * (pimpl->controlFrame.getPosition().getTranslation() - sdes.pimpl->controlFrame.getPosition().getTranslation());
 
     return pimpl->error;
   }
 
   const VectorXd& PositionFeature::computeError() const
   {
-    // first compute the position error in the mobile frame
-    const Vector3d e0 = pimpl->controlFrame.getPosition().getTranslation();
-    const Vector3d e_in_r = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
+//    // first compute the position error in the mobile frame
+//    const Vector3d e0 = pimpl->controlFrame.getPosition().getTranslation();
+//    const Vector3d e_in_r = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
 
-    // then project it on the controlled axes
-    pimpl->error = getSpaceTransform() * e_in_r;
+//    // then project it on the controlled axes
+//    pimpl->error = getSpaceTransform() * e_in_r;
 
+    pimpl->error = pimpl->u.transpose() * pimpl->controlFrame.getPosition().getTranslation();
     return pimpl->error;
   }
 
@@ -157,53 +166,63 @@ namespace ocra
   {
     const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
 
-    // first compute the linear velocity error in the mobile frame
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
-    const Vector3d errDot = pimpl->controlFrame.getVelocity().getLinearVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getVelocity().getLinearVelocity();
+//    // first compute the linear velocity error in the mobile frame
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
+//    const Vector3d errDot = pimpl->controlFrame.getVelocity().getLinearVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getVelocity().getLinearVelocity();
 
-    // then project it on the controlled axes
-    pimpl->errorDot = getSpaceTransform() * errDot;
-    
+
+//    // then project it on the controlled axes
+//    pimpl->errorDot = getSpaceTransform() * errDot;
+
+    pimpl->errorDot = pimpl->u.transpose() * (pimpl->controlFrame.getVelocity().getLinearVelocity()-sdes.pimpl->controlFrame.getVelocity().getLinearVelocity());
+
+
     return pimpl->errorDot;
   }
 
   const VectorXd& PositionFeature::computeErrorDot() const
   {
-    // first compute the linear velocity error in the mobile frame
-    const Vector3d errDot = pimpl->controlFrame.getVelocity().getLinearVelocity();
+//    // first compute the linear velocity error in the mobile frame
+//    const Vector3d errDot = pimpl->controlFrame.getVelocity().getLinearVelocity();
 
-    // then project it on the controlled axes
-    pimpl->errorDot = getSpaceTransform() * errDot;
+//    // then project it on the controlled axes
+//    pimpl->errorDot = getSpaceTransform() * errDot;
     
+    pimpl->errorDot = pimpl->u.transpose() * pimpl->controlFrame.getVelocity().getLinearVelocity();
+
     return pimpl->errorDot;
   }
 
   const MatrixXd& PositionFeature::computeJacobian(const Feature& featureDes) const
   {
-    const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
+//    const PositionFeature& sdes = dynamic_cast<const PositionFeature&>(featureDes);
 
-    // first compute the jacobian of the position error in the mobile frame
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
-    const MatrixXd jacobian = pimpl->controlFrame.getJacobian().bottomRows(3) - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getJacobian().bottomRows(3);
+//    // first compute the jacobian of the position error in the mobile frame
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
+//    const MatrixXd jacobian = pimpl->controlFrame.getJacobian().bottomRows(3) - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getJacobian().bottomRows(3);
+
 
     // then project it on the controlled axes
-    pimpl->jacobian = getSpaceTransform() * jacobian;
+//    pimpl->jacobian = getSpaceTransform() * jacobian;
+
+    pimpl->jacobian = pimpl->u.transpose() * pimpl->controlFrame.getJacobian().bottomRows(3);
 
     return pimpl->jacobian;
   }
 
   const MatrixXd& PositionFeature::computeJacobian() const
   {
-    // first compute the jacobian of the position error in the mobile frame
-    const MatrixXd jacobian = pimpl->controlFrame.getJacobian().bottomRows(3);
+//    // first compute the jacobian of the position error in the mobile frame
+//    const MatrixXd jacobian = pimpl->controlFrame.getJacobian().bottomRows(3);
 
-    // then project it on the controlled axes
-    pimpl->jacobian = getSpaceTransform() * jacobian;
+//    // then project it on the controlled axes
+//    pimpl->jacobian = getSpaceTransform() * jacobian;
 
+    pimpl->jacobian = pimpl->u.transpose() * pimpl->controlFrame.getJacobian().bottomRows(3);
     return pimpl->jacobian;
   }
 
@@ -323,8 +342,10 @@ namespace ocra
 
   const VectorXd& PointContactFeature::computeError() const
   {
-    const Vector3d& e0 = pimpl->controlFrame.getPosition().getTranslation();
-    pimpl->error = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
+//    const Vector3d& e0 = pimpl->controlFrame.getPosition().getTranslation();
+//    pimpl->error = pimpl->controlFrame.getPosition().getRotation().inverse() * e0;
+
+    pimpl->error = pimpl->controlFrame.getPosition().getTranslation();
     return pimpl->error;
   }
 
@@ -449,11 +470,12 @@ namespace ocra
     const OrientationFeature& sdes = dynamic_cast<const OrientationFeature&>(featureDes);
 
     const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
+//    const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
+//    const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
 
-    pimpl->acceleration = pimpl->controlFrame.getAcceleration().getAngularVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getAcceleration().getAngularVelocity();
+//    pimpl->acceleration = pimpl->controlFrame.getAcceleration().getAngularVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getAcceleration().getAngularVelocity();
 
+    pimpl->acceleration = pimpl->controlFrame.getAcceleration().getAngularVelocity() - sdes.pimpl->controlFrame.getAcceleration().getAngularVelocity();
     return pimpl->acceleration;
   }
 
@@ -470,7 +492,8 @@ namespace ocra
     const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
     const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
 
-    pimpl->error = (Rdes.inverse() * R).log();
+//    pimpl->error = (Rdes.inverse() * R).log();
+    pimpl->error = Rdes.adjoint()*((Rdes.inverse() * R).log());
 
     return pimpl->error;
   }
@@ -490,7 +513,8 @@ namespace ocra
     const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
     const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
 
-    pimpl->errorDot = pimpl->controlFrame.getVelocity().getAngularVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getVelocity().getAngularVelocity();
+//    pimpl->errorDot = pimpl->controlFrame.getVelocity().getAngularVelocity() - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getVelocity().getAngularVelocity();
+    pimpl->errorDot = pimpl->controlFrame.getVelocity().getAngularVelocity() - sdes.pimpl->controlFrame.getVelocity().getAngularVelocity();
 
     return pimpl->errorDot;
   }
@@ -509,8 +533,9 @@ namespace ocra
     const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
     const Eigen::Displacementd::Rotation3D Rdes_in_r = R.inverse() * Rdes;
 
-    pimpl->jacobian = pimpl->controlFrame.getJacobian().topRows(3) - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getJacobian().topRows(3);
+//    pimpl->jacobian = pimpl->controlFrame.getJacobian().topRows(3) - Rdes_in_r.adjoint() * sdes.pimpl->controlFrame.getJacobian().topRows(3);
 
+    pimpl->jacobian = pimpl->controlFrame.getJacobian().topRows(3) - sdes.pimpl->controlFrame.getJacobian().topRows(3);
     return pimpl->jacobian;
   }
 
@@ -662,35 +687,39 @@ namespace ocra
   {
     const DisplacementFeature& sdes = dynamic_cast<const DisplacementFeature&>(featureDes);
 
-    // Twist error in the mobile frame
-    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
-    const Eigen::Twistd Terror = sdes.pimpl->controlFrame.getVelocity() - Herror.inverse().adjoint() * pimpl->controlFrame.getVelocity();
-    //const Eigen::Twistd gamma_error =
-    //  pimpl->controlFrame.getAcceleration() -
-    //  Herror.adjoint() * sdes.pimpl->controlFrame.getAcceleration() -
-    //  Herror.adjoint() * Terror.bracket(sdes.pimpl->controlFrame.getAcceleration());
-    const Eigen::Twistd gamma_error =
-      pimpl->controlFrame.getAcceleration() - sdes.pimpl->controlFrame.getAcceleration();
+//    // Twist error in the mobile frame
+//    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
+//    const Eigen::Twistd Terror = sdes.pimpl->controlFrame.getVelocity() - Herror.inverse().adjoint() * pimpl->controlFrame.getVelocity();
+//    //const Eigen::Twistd gamma_error =
+//    //  pimpl->controlFrame.getAcceleration() -
+//    //  Herror.adjoint() * sdes.pimpl->controlFrame.getAcceleration() -
+//    //  Herror.adjoint() * Terror.bracket(sdes.pimpl->controlFrame.getAcceleration());
+//    const Eigen::Twistd gamma_error =
+//      pimpl->controlFrame.getAcceleration() - sdes.pimpl->controlFrame.getAcceleration();
 
-    // project the translational part on the controlled axes
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->acceleration.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * gamma_error.getLinearVelocity();
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->acceleration.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * gamma_error.getLinearVelocity();
 
-    pimpl->acceleration.head(3) = gamma_error.getAngularVelocity();
+//    pimpl->acceleration.head(3) = gamma_error.getAngularVelocity();
+
+    pimpl->acceleration = pimpl->controlFrame.getAcceleration() - sdes.pimpl->controlFrame.getAcceleration();
 
     return pimpl->acceleration;
   }
 
   const VectorXd& DisplacementFeature::computeAcceleration() const
   {
-    const VectorXd acc = pimpl->controlFrame.getAcceleration();
+//    const VectorXd acc = pimpl->controlFrame.getAcceleration();
 
-    // project the translational part on the controlled axes
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->acceleration.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * acc.tail(3);
-    pimpl->acceleration.head(3) = acc.head(3);
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->acceleration.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * acc.tail(3);
+//    pimpl->acceleration.head(3) = acc.head(3);
+
+    pimpl->acceleration = pimpl->controlFrame.getAcceleration();
 
     return pimpl->acceleration;
   }
@@ -700,28 +729,31 @@ namespace ocra
     const DisplacementFeature& sdes = dynamic_cast<const DisplacementFeature&>(featureDes);
 
     // Displacement error in the mobile frame
-    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
+//    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
 
     // Project the opposite translational part on the controlled axes
     const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->error.tail(pimpl->dim - 3) = - u_in_mobileFrame.transpose() * Herror.getTranslation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->error.tail(pimpl->dim - 3) = - u_in_mobileFrame.transpose() * Herror.getTranslation();
 
     const Eigen::Displacementd::Rotation3D& Rdes = sdes.pimpl->controlFrame.getPosition().getRotation();
-    pimpl->error.head(3) = (Rdes.inverse() * R).log();
+//    pimpl->error.head(3) = (Rdes.inverse() * R).log();
+    pimpl->error.head(3) = Rdes.adjoint()*((Rdes.inverse() * R).log());
 
+    pimpl->error.tail(pimpl->dim - 3) = pimpl->controlFrame.getPosition().getTranslation() - sdes.pimpl->controlFrame.getPosition().getTranslation();
     return pimpl->error;
   }
 
   const VectorXd& DisplacementFeature::computeError() const
   {
     // Displacement error in the mobile frame
-    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse();
+//    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse();
 
     // Project the opposite translational part on the controlled axes
     const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
     const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->error.tail(pimpl->dim - 3) = - u_in_mobileFrame.transpose() * Herror.getTranslation();
+//    pimpl->error.tail(pimpl->dim - 3) = - u_in_mobileFrame.transpose() * Herror.getTranslation();
+    pimpl->error.tail(pimpl->dim - 3) = pimpl->controlFrame.getPosition().getTranslation();
     pimpl->error.head(3) = R.log();
 
     return pimpl->error;
@@ -731,30 +763,37 @@ namespace ocra
   {
     const DisplacementFeature& sdes = dynamic_cast<const DisplacementFeature&>(featureDes);
 
-    // Twist error in the mobile frame
-    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
-    const Eigen::Twistd Terror = pimpl->controlFrame.getVelocity() - Herror.adjoint() * sdes.pimpl->controlFrame.getVelocity();
+//    // Twist error in the mobile frame
+//    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
+//    const Eigen::Twistd Terror = pimpl->controlFrame.getVelocity() - Herror.adjoint() * sdes.pimpl->controlFrame.getVelocity();
 
-    // project the translational part on the controlled axes
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->errorDot.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * Terror.getLinearVelocity();
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->errorDot.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * Terror.getLinearVelocity();
+    pimpl->errorDot.tail(pimpl->dim - 3) = pimpl->controlFrame.getVelocity().getLinearVelocity() - sdes.pimpl->controlFrame.getVelocity().getLinearVelocity();
 
-    pimpl->errorDot.head(3) = Terror.getAngularVelocity();
+//    pimpl->errorDot.head(3) = Terror.getAngularVelocity();
+
+    pimpl->errorDot.head(3) = pimpl->controlFrame.getVelocity().getAngularVelocity() - sdes.pimpl->controlFrame.getVelocity().getAngularVelocity();
+
 
     return pimpl->errorDot;
   }
 
   const VectorXd& DisplacementFeature::computeErrorDot() const
   {
-    // Twist error in the mobile frame
-    const Eigen::Twistd Terror = pimpl->controlFrame.getVelocity();
+//    // Twist error in the mobile frame
+//    const Eigen::Twistd Terror = pimpl->controlFrame.getVelocity();
 
-    // project the translational part on the controlled axes
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->errorDot.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * Terror.getLinearVelocity();
-    pimpl->errorDot.head(3) = Terror.getAngularVelocity();
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->errorDot.tail(pimpl->dim - 3) = u_in_mobileFrame.transpose() * Terror.getLinearVelocity();
+    pimpl->errorDot.tail(pimpl->dim - 3) = pimpl->controlFrame.getVelocity().getLinearVelocity();
+
+//    pimpl->errorDot.head(3) = Terror.getAngularVelocity();
+    pimpl->errorDot.head(3) = pimpl->controlFrame.getVelocity().getAngularVelocity();
 
     return pimpl->errorDot;
   }
@@ -763,16 +802,19 @@ namespace ocra
   {
     const DisplacementFeature& sdes = dynamic_cast<const DisplacementFeature&>(featureDes);
 
-    // Twist error in the mobile frame
-    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
-    const MatrixXd J = pimpl->controlFrame.getJacobian() - Herror.adjoint() * sdes.pimpl->controlFrame.getJacobian();
+//    // Twist error in the mobile frame
+//    const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse() * sdes.pimpl->controlFrame.getPosition();
+//    const MatrixXd J = pimpl->controlFrame.getJacobian() - Herror.adjoint() * sdes.pimpl->controlFrame.getJacobian();
 
-    // project the translational part on the controlled axes
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->jacobian.bottomRows(pimpl->dim - 3) = u_in_mobileFrame.transpose() * J.bottomRows(3);
+
+//    pimpl->jacobian.topRows(3) = J.topRows(3);
+
     const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->jacobian.bottomRows(pimpl->dim - 3) = u_in_mobileFrame.transpose() * J.bottomRows(3);
-
-    pimpl->jacobian.topRows(3) = J.topRows(3);
+    const MatrixXd J = pimpl->controlFrame.getJacobian() - sdes.pimpl->controlFrame.getJacobian();
 
     return pimpl->jacobian;
   }
@@ -781,13 +823,14 @@ namespace ocra
   {
     // Twist error in the mobile frame
     const Eigen::Displacementd Herror = pimpl->controlFrame.getPosition().inverse();
-    const MatrixXd J = pimpl->controlFrame.getJacobian();
+//    const MatrixXd J = pimpl->controlFrame.getJacobian();
+    pimpl->jacobian = pimpl->controlFrame.getJacobian();
 
-    // project the translational part on the controlled axes
-    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
-    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
-    pimpl->jacobian.bottomRows(pimpl->dim - 3) = u_in_mobileFrame.transpose() * J.bottomRows(3);
-    pimpl->jacobian.topRows(3) = J.topRows(3);
+//    // project the translational part on the controlled axes
+//    const Eigen::Displacementd::Rotation3D& R = pimpl->controlFrame.getPosition().getRotation();
+//    const MatrixXd u_in_mobileFrame = R.inverse().adjoint() * pimpl->u;
+//    pimpl->jacobian.bottomRows(pimpl->dim - 3) = u_in_mobileFrame.transpose() * J.bottomRows(3);
+//    pimpl->jacobian.topRows(3) = J.topRows(3);
 
     return pimpl->jacobian;
   }
@@ -913,7 +956,8 @@ namespace ocra
   {
     const Eigen::Displacementd H = pimpl->controlFrame.getPosition();
     const Eigen::Displacementd::Rotation3D& R = H.getRotation();
-    pimpl->error.tail(3) = R.adjoint().transpose() * H.getTranslation();
+//    pimpl->error.tail(3) = R.adjoint().transpose() * H.getTranslation();
+    pimpl->error.tail(3) = H.getTranslation();
     pimpl->error.head(3) = R.log();
     return pimpl->error;
   }
