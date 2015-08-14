@@ -116,7 +116,7 @@ wOcraVariableWeightsTaskManager::wOcraVariableWeightsTaskManager(wOcraController
 
 wOcraVariableWeightsTaskManager::~wOcraVariableWeightsTaskManager()
 {
-    
+
 }
 
 
@@ -289,6 +289,11 @@ Eigen::VectorXd wOcraVariableWeightsTaskManager::getTaskError()
         errors(i) = tasks[i]->getError()[i];
     }
     return errors;
+}
+
+Eigen::Vector3d wOcraVariableWeightsTaskManager::getTaskFramePosition()
+{
+    return featFrame->getPosition().getTranslation();
 }
 
 

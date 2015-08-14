@@ -17,9 +17,9 @@ namespace wocra
 class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
 {
     public:
-        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, bool usesYarpPorts = false);
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, bool usesYarpPorts = true);
 
-        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, const Eigen::Rotation3d& targetPose, bool usesYarpPorts = false);
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, const Eigen::Rotation3d& targetPose, bool usesYarpPorts = true);
 
         ~wOcraSegOrientationTaskManager();
 
