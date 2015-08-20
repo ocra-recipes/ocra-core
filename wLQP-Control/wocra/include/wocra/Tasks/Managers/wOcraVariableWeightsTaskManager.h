@@ -79,6 +79,9 @@ class wOcraVariableWeightsTaskManager : public wOcraTaskManagerBase
         // Task error
         Eigen::VectorXd getTaskError();
 
+        Eigen::Vector3d getTaskFramePosition();
+        
+
 
     private:
         std::vector<ocra::ECartesianDof>     axes;

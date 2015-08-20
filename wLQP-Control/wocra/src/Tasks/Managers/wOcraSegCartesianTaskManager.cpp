@@ -373,4 +373,9 @@ bool wOcraSegCartesianTaskManager::checkIfActivated()
     return task->isActiveAsObjective();
 }
 
+Eigen::Vector3d wOcraSegCartesianTaskManager::getTaskFramePosition()
+{
+    return featFrame->getPosition().getTranslation();
+}
+
 }

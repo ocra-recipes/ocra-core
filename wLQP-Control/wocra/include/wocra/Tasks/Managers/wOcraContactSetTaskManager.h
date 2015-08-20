@@ -19,7 +19,7 @@ namespace wocra
 class wOcraContactSetTaskManager: public wOcraTaskManagerBase
 {
     public:
-        wOcraContactSetTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, std::vector<Eigen::Displacementd> H_segment_frames, double mu, double margin, bool usesYarpPorts = false);
+        wOcraContactSetTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, std::vector<Eigen::Displacementd> H_segment_frames, double mu, double margin, bool usesYarpPorts = true);
 
         ~wOcraContactSetTaskManager();
 
