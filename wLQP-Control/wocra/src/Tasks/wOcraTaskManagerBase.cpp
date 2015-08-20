@@ -147,21 +147,21 @@ void wOcraTaskManagerBase::parseIncomingMessage(yarp::os::Bottle *input, yarp::o
             i++;
         }
 
-        // Weight
-        else if (msgTag == "setWeight")
-        {
-            i++;
-            setWeight(input->get(i).asDouble());
-            reply->addString("Weight:");
-            reply->addDouble(getWeight());
-            i++;
-        }
-        else if(msgTag == "getWeight")
-        {
-            reply->addString("Weight:");
-            reply->addDouble(getWeight());
-            i++;
-        }
+//        // Weight
+//        else if (msgTag == "setWeight")
+//        {
+//            i++;
+//            setWeight(input->get(i).asDouble());
+//            reply->addString("Weight:");
+//            reply->addDouble(getWeight());
+//            i++;
+//        }
+//        else if(msgTag == "getWeight")
+//        {
+//            reply->addString("Weight:");
+//            reply->addDouble(getWeight());
+//            i++;
+//        }
 
         else if (msgTag == "useTrajectory")
         {

@@ -47,7 +47,7 @@ struct wOcraTask::Pimpl
     bool                        useReducedProblem;
     ocra::BaseVariable           fcVar;
 
-    double                weight;
+//    double                weight;
     const Feature&        feature;
 
     bool taskHasBeenInitialized;
@@ -75,7 +75,7 @@ struct wOcraTask::Pimpl
         , dynamicEquation(0x0)
         , useReducedProblem(false)
         , fcVar(name+".var", s.getDimension())
-        , weight(1.)
+//        , weight(1.)
         , feature(s)
         , taskHasBeenInitialized(false)
         , contactForceConstraintHasBeenSavedInSolver(false)
@@ -459,16 +459,12 @@ void wOcraTask::doDeactivateAsConstraint()
  *
  * The weight in the objective function is modified.
  *
- * \todo the \b getWeight() method of the task returns a matrix, but the \b setWeight() method of the objective requires a double value.
- * I don't really know how to cope with this problem. For now the first value of the matrix is used.
  */
 void wOcraTask::doSetWeight()
 {
-    pimpl->weight = getWeight()[0]; //TODO: BUG HERE!!!
     if (pimpl->innerTaskAsObjective)
     {
-        pimpl->innerTaskAsObjective->setWeight(pimpl->weight);
-        // pimpl->innerTaskAsObjective->changeWeight(pimpl->weight);
+         pimpl->innerTaskAsObjective->getFunction().changeWeight(getWeight());
     }
 
 

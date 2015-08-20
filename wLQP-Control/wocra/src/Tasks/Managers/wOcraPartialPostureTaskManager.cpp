@@ -28,6 +28,21 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
     _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
 }
 
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                int _fullStateType,
+                                                                Eigen::VectorXi& _dofIndices,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                const Eigen::VectorXd& _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
+{
+    _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
+}
+
+
 /** Constructor with desired initial position
  *
  * \param ctrl                  wOcraController to connect to
@@ -56,6 +71,22 @@ wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& 
     setPosture(_init_q);
 }
 
+wOcraPartialPostureTaskManager::wOcraPartialPostureTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                int _fullStateType,
+                                                                Eigen::VectorXi& _dofIndices,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                const Eigen::VectorXd& _weight,
+                                                                Eigen::VectorXd& _init_q,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts)
+{
+    _init(_fullStateType, _dofIndices, _stiffness, _damping, _weight);
+    setPosture(_init_q);
+}
+
 wOcraPartialPostureTaskManager::~wOcraPartialPostureTaskManager()
 {
     
@@ -66,6 +97,28 @@ wOcraPartialPostureTaskManager::~wOcraPartialPostureTaskManager()
  *
  */
 void wOcraPartialPostureTaskManager::_init(int _fullStateType, VectorXi& _dofIndices, double _stiffness, double _damping, double _weight)
+{
+    featState = new wocra::PartialModelState(name + ".PartialModelState", model, _dofIndices, _fullStateType);
+    featDesState = new wocra::PartialTargetState(name + ".PartialTargetState", model, _dofIndices, _fullStateType);
+    feat = new wocra::PartialStateFeature(name + ".PartialStateFeature", *featState);
+    featDes = new wocra::PartialStateFeature(name + ".PartialStateFeature_Des", *featDesState);
+
+    // The feature initializes as Zero for posture
+    task = &(ctrl.createwOcraTask(name, *feat, *featDes));
+    task->initAsAccelerationTask();
+    ctrl.addTask(*task);
+
+
+    task->setStiffness(_stiffness);
+    task->setDamping(_damping);
+    task->setWeight(_weight);
+
+    task->activateAsObjective();
+
+    setStateDimension(task->getDimension());
+}
+
+void wOcraPartialPostureTaskManager::_init(int _fullStateType, VectorXi& _dofIndices, double _stiffness, double _damping, const Eigen::VectorXd& _weight)
 {
     featState = new wocra::PartialModelState(name + ".PartialModelState", model, _dofIndices, _fullStateType);
     featDesState = new wocra::PartialTargetState(name + ".PartialTargetState", model, _dofIndices, _fullStateType);
@@ -162,14 +215,18 @@ void wOcraPartialPostureTaskManager::setWeight(double weight)
     task->setWeight(weight);
 }
 
+void wOcraPartialPostureTaskManager::setWeight(const Eigen::VectorXd& weight)
+{
+    task->setWeight(weight);
+}
+
 /** Gets the weight constant for this task
  *
  *  \return                     The weight for this task
  */
-double wOcraPartialPostureTaskManager::getWeight()
+Eigen::VectorXd wOcraPartialPostureTaskManager::getWeight()
 {
-    Eigen::VectorXd weights = task->getWeight();
-    return weights[0];
+    return task->getWeight();
 }
 
 /** Sets the stiffness for this task

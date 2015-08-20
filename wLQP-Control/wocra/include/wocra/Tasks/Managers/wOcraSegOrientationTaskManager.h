@@ -19,7 +19,11 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
     public:
         wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, bool usesYarpPorts = false);
 
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
         wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, double weight, const Eigen::Rotation3d& targetPose, bool usesYarpPorts = false);
+
+        wOcraSegOrientationTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::Rotation3d& targetPose, bool usesYarpPorts = false);
 
         ~wOcraSegOrientationTaskManager();
 
@@ -35,7 +39,8 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
         void setDamping(double damping);
         double getDamping();
         void setWeight(double weight);
-        double getWeight();
+        void setWeight(const Eigen::VectorXd& weight);
+        Eigen::VectorXd getWeight();
         void setDesiredState();
 
         // Task error
@@ -59,6 +64,7 @@ class wOcraSegOrientationTaskManager: public wOcraTaskManagerBase
 //        Eigen::Displacementd            _poseDes;
 
         void _init(Eigen::Rotation3d refOrientation_LocalFrame, double stiffness, double damping, double weight);
+        void _init(Eigen::Rotation3d refOrientation_LocalFrame, double stiffness, double damping, const Eigen::VectorXd& weight);
 };
 
 }

@@ -19,10 +19,18 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
     public:
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, double weight, bool usesYarpPorts = false);
 
+        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, double weight,
             Eigen::Vector3d posDes, bool usesYarpPorts = false);
 
+        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight,
+            Eigen::Vector3d posDes, bool usesYarpPorts = false);
+
         wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, double weight,
+            Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes, bool usesYarpPorts = false);
+
+        wOcraCoMTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight,
             Eigen::Vector3d posDes, Eigen::Vector3d velDes, Eigen::Vector3d accDes, bool usesYarpPorts = false);
 
         ~wOcraCoMTaskManager();
@@ -49,7 +57,8 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         void setDamping(double damping);
         double getDamping();
         void setWeight(double weight);
-        double getWeight();
+        void setWeight(const Eigen::VectorXd& weight);
+        Eigen::VectorXd getWeight();
         void setDesiredState();
 
         // Task error
@@ -64,6 +73,7 @@ class wOcraCoMTaskManager: public wOcraTaskManagerBase
         ocra::TargetFrame*               featDesFrame;
 
         void _init(double stiffness, double damping, double weight);
+        void _init(double stiffness, double damping, const Eigen::VectorXd& weight);
 };
 
 }

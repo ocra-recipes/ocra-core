@@ -20,7 +20,11 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
     public:
         wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight, bool usesYarpPorts = false);
 
+        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
         wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, double weight, const Eigen::VectorXd& init_q, bool usesYarpPorts = false);
+
+        wOcraFullPostureTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, int fullStateType, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::VectorXd& init_q, bool usesYarpPorts = false);
 
         ~wOcraFullPostureTaskManager();
 
@@ -43,7 +47,8 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
         void setDamping(double damping);
         double getDamping();
         void setWeight(double weight);
-        double getWeight();
+        void setWeight(const Eigen::VectorXd& weight);
+        Eigen::VectorXd getWeight();
         void setDesiredState();
 
 
@@ -62,6 +67,7 @@ class wOcraFullPostureTaskManager : public wOcraTaskManagerBase
         ocra::FullTargetState*           featDesState;
 
         void _init(int fullStateType, double stiffness, double damping, double weight);
+        void _init(int fullStateType, double stiffness, double damping, const Eigen::VectorXd& weight);
 };
 
 }

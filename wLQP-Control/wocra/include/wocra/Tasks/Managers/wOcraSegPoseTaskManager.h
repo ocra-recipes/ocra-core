@@ -25,6 +25,14 @@ class wOcraSegPoseTaskManager : public wOcraTaskManagerBase
 
         wOcraSegPoseTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Displacementd& segFrame_Local, ocra::ECartesianDof axes, double stiffness, double damping, double weight, const Eigen::Displacementd& targetPose, bool usesYarpPorts = false);
 
+        wOcraSegPoseTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
+        wOcraSegPoseTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Displacementd& segFrame_Local, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
+        wOcraSegPoseTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::Displacementd& targetPose, bool usesYarpPorts = false);
+
+        wOcraSegPoseTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Displacementd& segFrame_Local, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::Displacementd& targetPose, bool usesYarpPorts = false);
+
         ~wOcraSegPoseTaskManager();
 
         void setState(const Eigen::Displacementd& pose);
@@ -40,7 +48,8 @@ class wOcraSegPoseTaskManager : public wOcraTaskManagerBase
         void setDamping(double damping);
         double getDamping();
         void setWeight(double weight);
-        double getWeight();
+        void setWeight(const Eigen::VectorXd& weight);
+        Eigen::VectorXd getWeight();
         void setDesiredState();
 
 
@@ -66,6 +75,7 @@ class wOcraSegPoseTaskManager : public wOcraTaskManagerBase
         ocra::TargetFrame*               featDesFrame;
 
         void _init(const Eigen::Displacementd& ref_LocalFrame, double stiffness, double damping, double weight);
+        void _init(const Eigen::Displacementd& ref_LocalFrame, double stiffness, double damping, const Eigen::VectorXd& weight);
 };
 
 }

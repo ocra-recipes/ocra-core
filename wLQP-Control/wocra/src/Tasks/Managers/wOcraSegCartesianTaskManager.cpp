@@ -29,6 +29,21 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
     _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
 }
 
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            const Eigen::VectorXd& _weight,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
+}
+
 /** Constructor with the specifying the point of reference on the segment to track
  *
  * \param _ctrl                 wOcraController to connect to
@@ -57,6 +72,21 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
     _init(_segPoint_Local, _stiffness, _damping, _weight);
 }
 
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            const Eigen::Vector3d& _segPoint_Local,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            const Eigen::VectorXd& _weight,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segPoint_Local, _stiffness, _damping, _weight);
+}
 /** Constructor with desired pose
  *
  * \param _ctrl                 wOcraController to connect to
@@ -87,6 +117,23 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
     setState(_poseDes);
 }
 
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            const Eigen::VectorXd& _weight,
+                                                            const Eigen::Vector3d& _poseDes,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(Eigen::Vector3d::Zero(), _stiffness, _damping, _weight);
+    // Have no idea this wrapper needs to be done
+    setState(_poseDes);
+}
 /**
  * Constructor with both point on segment and desired pose
  *
@@ -118,6 +165,23 @@ wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctr
     setState(_poseDes);
 }
 
+wOcraSegCartesianTaskManager::wOcraSegCartesianTaskManager(wOcraController& _ctrl,
+                                                            const wOcraModel& _model,
+                                                            const std::string& _taskName,
+                                                            const std::string& _segmentName,
+                                                            const Vector3d& _segPoint_Local,
+                                                            ocra::ECartesianDof _axes,
+                                                            double _stiffness,
+                                                            double _damping,
+                                                            const Eigen::VectorXd& _weight,
+                                                            const Eigen::Vector3d& _poseDes,
+                                                            bool _usesYarpPorts)
+
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segPoint_Local, _stiffness, _damping, _weight);
+    setState(_poseDes);
+}
 
 wOcraSegCartesianTaskManager::~wOcraSegCartesianTaskManager()
 {
@@ -148,6 +212,26 @@ void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_Local
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
 }
 
+void wOcraSegCartesianTaskManager::_init(const Eigen::Vector3d& _taskPoint_LocalFrame, double _stiffness, double _damping, const Eigen::VectorXd& _weight)
+{
+    featFrame = new ocra::SegmentFrame(name + ".SegmentFrame", model, model.SegmentName(segmentName), Eigen::Displacementd(_taskPoint_LocalFrame));
+    featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
+    feat = new ocra::PositionFeature(name + ".PositionFeature", *featFrame, axes);
+    featDes = new ocra::PositionFeature(name + ".PositionFeature_Des", *featDesFrame, axes);
+
+    task = &(ctrl.createwOcraTask(name, *feat, *featDes));
+    task->initAsAccelerationTask();
+    ctrl.addTask(*task);
+
+    task->activateAsObjective();
+    task->setStiffness(_stiffness);
+    task->setDamping(_damping);
+    task->setWeight(_weight);
+
+    setStateDimension(9, 3); //3 dof for pos vel and acc
+    // Set the desired state to the current position of the segment with 0 vel or acc
+    setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)).getTranslation());
+}
 /** Sets the position for the task, only the translational position
  *
  * \param position                  Vector for desired position
@@ -194,14 +278,18 @@ void wOcraSegCartesianTaskManager::setWeight(double weight)
     task->setWeight(weight);
 }
 
+void wOcraSegCartesianTaskManager::setWeight(const Eigen::VectorXd& weight)
+{
+    task->setWeight(weight);
+}
+
 /** Gets the weight constant for this task
  *
  *  \return                     The weight for this task
  */
-double wOcraSegCartesianTaskManager::getWeight()
+Eigen::VectorXd wOcraSegCartesianTaskManager::getWeight()
 {
-    Eigen::VectorXd weights = task->getWeight();
-    return weights[0];
+    return task->getWeight();
 }
 
 /** Sets the stiffness for this task

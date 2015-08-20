@@ -25,6 +25,14 @@ class wOcraSegCartesianTaskManager : public wOcraTaskManagerBase
 
         wOcraSegCartesianTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Vector3d& segPoint_Local, ocra::ECartesianDof axes, double stiffness, double damping, double weight, const Eigen::Vector3d& targetPose, bool usesYarpPorts = false);
 
+        wOcraSegCartesianTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
+        wOcraSegCartesianTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Vector3d& segPoint_Local, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, bool usesYarpPorts = false);
+
+        wOcraSegCartesianTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::Vector3d& targetPose, bool usesYarpPorts = false);
+
+        wOcraSegCartesianTaskManager(wOcraController& ctrl, const wOcraModel& model, const std::string& taskName, const std::string& segmentName, const Eigen::Vector3d& segPoint_Local, ocra::ECartesianDof axes, double stiffness, double damping, const Eigen::VectorXd& weight, const Eigen::Vector3d& targetPose, bool usesYarpPorts = false);
+
         ~wOcraSegCartesianTaskManager();
 
         // Sets the position
@@ -42,7 +50,8 @@ class wOcraSegCartesianTaskManager : public wOcraTaskManagerBase
         void setDamping(double damping);
         double getDamping();
         void setWeight(double weight);
-        double getWeight();
+        void setWeight(const Eigen::VectorXd& weight);
+        Eigen::VectorXd getWeight();
         void setDesiredState();
 
         // Task error
@@ -66,6 +75,7 @@ class wOcraSegCartesianTaskManager : public wOcraTaskManagerBase
         ocra::TargetFrame*               featDesFrame;
 
         void _init(const Eigen::Vector3d& refPoint_LocalFrame, double stiffness, double damping, double weight);
+        void _init(const Eigen::Vector3d& refPoint_LocalFrame, double stiffness, double damping, const Eigen::VectorXd& weight);
 };
 
 }

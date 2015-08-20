@@ -26,6 +26,19 @@ wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& 
     _init(Eigen::Rotation3d::Identity(), _stiffness, _damping, _weight);
 }
 
+wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                const Eigen::VectorXd& _weight,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName)
+{
+    _init(Eigen::Rotation3d::Identity(), _stiffness, _damping, _weight);
+}
+
 /** Constructor with desired pose
  *
  * \param _ctrl                 wOcraController to connect to
@@ -52,6 +65,22 @@ wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& 
     setOrientation(_orientationDes);
 }
 
+wOcraSegOrientationTaskManager::wOcraSegOrientationTaskManager(wOcraController& _ctrl,
+                                                                const wOcraModel& _model,
+                                                                const std::string& _taskName,
+                                                                const std::string& _segmentName,
+                                                                double _stiffness,
+                                                                double _damping,
+                                                                const Eigen::VectorXd& _weight,
+                                                                const Eigen::Rotation3d& _orientationDes,
+                                                                bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName)
+{
+    _init(Eigen::Rotation3d::Identity(), _stiffness, _damping, _weight);
+    setOrientation(_orientationDes);
+}
+
+
 wOcraSegOrientationTaskManager::~wOcraSegOrientationTaskManager()
 {
     
@@ -61,6 +90,29 @@ wOcraSegOrientationTaskManager::~wOcraSegOrientationTaskManager()
  *
  */
 void wOcraSegOrientationTaskManager::_init(Eigen::Rotation3d _refOrientation_LocalFrame, double _stiffness, double _damping, double _weight)
+{
+    featFrame = new ocra::SegmentFrame(name + ".SegmentFrame", model, model.SegmentName(segmentName), Eigen::Displacementd(Eigen::Vector3d::Zero(), _refOrientation_LocalFrame));
+    featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
+    feat = new ocra::OrientationFeature(name + ".OrientationFeature", *featFrame);
+    featDes = new ocra::OrientationFeature(name + ".OrientationFeature_Des", *featDesFrame);
+
+    featDesFrame->setPosition(Eigen::Displacementd::Identity());
+    featDesFrame->setVelocity(Eigen::Twistd::Zero());
+    featDesFrame->setAcceleration(Eigen::Twistd::Zero());
+
+    task = &(ctrl.createwOcraTask(name, *feat, *featDes));
+    task->initAsAccelerationTask();
+    ctrl.addTask(*task);
+
+    task->activateAsObjective();
+    task->setStiffness(_stiffness);
+    task->setDamping(_damping);
+    task->setWeight(_weight);
+
+    setStateDimension(4); //Quaternion only.
+}
+
+void wOcraSegOrientationTaskManager::_init(Eigen::Rotation3d _refOrientation_LocalFrame, double _stiffness, double _damping, const Eigen::VectorXd& _weight)
 {
     featFrame = new ocra::SegmentFrame(name + ".SegmentFrame", model, model.SegmentName(segmentName), Eigen::Displacementd(Eigen::Vector3d::Zero(), _refOrientation_LocalFrame));
     featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
@@ -114,14 +166,18 @@ void wOcraSegOrientationTaskManager::setWeight(double weight)
     task->setWeight(weight);
 }
 
+void wOcraSegOrientationTaskManager::setWeight(const Eigen::VectorXd& weight)
+{
+    task->setWeight(weight);
+}
+
 /** Gets the weight constant for this task
  *
  *  \return                     The weight for this task
  */
-double wOcraSegOrientationTaskManager::getWeight()
+Eigen::VectorXd wOcraSegOrientationTaskManager::getWeight()
 {
-    Eigen::VectorXd weights = task->getWeight();
-    return weights[0];
+    return task->getWeight();
 }
 
 /** Sets the stiffness for this task

@@ -28,6 +28,20 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
     _init(Eigen::Displacementd::Identity(), _stiffness, _damping, _weight);
 }
 
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    const Eigen::VectorXd& _weight,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(Eigen::Displacementd::Identity(), _stiffness, _damping, _weight);
+}
+
 /** Constructor with offset frame
  *
  * \param _ctrl                  wOcraController to connect to
@@ -49,6 +63,21 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
                                                     double _stiffness,
                                                     double _damping,
                                                     double _weight,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segFrame_Local, _stiffness, _damping, _weight);
+}
+
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    const Eigen::Displacementd& _segFrame_Local,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    const Eigen::VectorXd& _weight,
                                                     bool _usesYarpPorts)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
 {
@@ -83,6 +112,21 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
     setState(_poseDes);
 }
 
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    const Eigen::VectorXd& _weight,
+                                                    const Eigen::Displacementd& _poseDes,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(Eigen::Displacementd::Identity(), _stiffness, _damping, _weight);
+    setState(_poseDes);
+}
 
 /** Constructor with desired pose
  *
@@ -113,6 +157,24 @@ wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
     _init(_segFrame_Local, _stiffness, _damping, _weight);
     setState(_poseDes);
 }
+
+wOcraSegPoseTaskManager::wOcraSegPoseTaskManager(wOcraController& _ctrl,
+                                                    const wOcraModel& _model,
+                                                    const std::string& _taskName,
+                                                    const std::string& _segmentName,
+                                                    const Eigen::Displacementd& _segFrame_Local,
+                                                    ocra::ECartesianDof _axes,
+                                                    double _stiffness,
+                                                    double _damping,
+                                                    const Eigen::VectorXd& _weight,
+                                                    const Eigen::Displacementd& _poseDes,
+                                                    bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), segmentName(_segmentName), axes(_axes)
+{
+    _init(_segFrame_Local, _stiffness, _damping, _weight);
+    setState(_poseDes);
+}
+
 
 wOcraSegPoseTaskManager::~wOcraSegPoseTaskManager()
 {
@@ -149,6 +211,34 @@ void wOcraSegPoseTaskManager::_init(const Eigen::Displacementd& _ref_LocalFrame,
     setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)));
 
 }
+
+void wOcraSegPoseTaskManager::_init(const Eigen::Displacementd& _ref_LocalFrame, double _stiffness, double _damping, const Eigen::VectorXd& _weight)
+{
+    featFrame = new ocra::SegmentFrame(name + ".SegmentFrame", model, model.SegmentName(segmentName), _ref_LocalFrame);
+    featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
+    feat = new ocra::DisplacementFeature(name + ".DisplacementFeature", *featFrame, axes);
+    featDes = new ocra::DisplacementFeature(name + ".DisplacementFeature_Des", *featDesFrame, axes);
+
+    task = &(ctrl.createwOcraTask(name, *feat, *featDes));
+    task->initAsAccelerationTask();
+    ctrl.addTask(*task);
+
+    featDesFrame->setPosition(Eigen::Displacementd::Identity());
+    featDesFrame->setVelocity(Eigen::Twistd::Zero());
+    featDesFrame->setAcceleration(Eigen::Twistd::Zero());
+
+    task->activateAsObjective();
+    task->setStiffness(_stiffness);
+    task->setDamping(_damping);
+    task->setWeight(_weight);
+
+    setStateDimension(7+6+6, 7); // dispd = 7 + 2*twistd = 6
+
+    // Set the desired state to the current pose of the segment with 0 vel or acc
+    setState(model.getSegmentPosition(model.getSegmentIndex(segmentName)));
+
+}
+
 
 /** Sets the pose for the task, both the translational and rotational components
  *
@@ -199,14 +289,18 @@ void wOcraSegPoseTaskManager::setWeight(double weight)
     task->setWeight(weight);
 }
 
+void wOcraSegPoseTaskManager::setWeight(const Eigen::VectorXd& weight)
+{
+    task->setWeight(weight);
+}
+
 /** Gets the weight constant for this task
  *
  *  \return                     The weight for this task
  */
-double wOcraSegPoseTaskManager::getWeight()
+Eigen::VectorXd wOcraSegPoseTaskManager::getWeight()
 {
-    Eigen::VectorXd weights = task->getWeight();
-    return weights[0];
+    return task->getWeight();
 }
 
 /** Sets the stiffness for this task

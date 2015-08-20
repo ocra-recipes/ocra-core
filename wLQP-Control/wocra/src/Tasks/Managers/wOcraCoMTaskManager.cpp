@@ -19,6 +19,13 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraMode
     _init(_stiffness, _damping, _weight);
 }
 
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, ocra::ECartesianDof _axes, double _stiffness, double _damping, const Eigen::VectorXd& _weight, bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), axes(_axes)
+{
+    _init(_stiffness, _damping, _weight);
+}
+
+
 /** Constructor with initial desired position (in 3D cartesian space)
  *
  * \param _ctrl                 wOcraController to connect to
@@ -31,6 +38,13 @@ wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraMode
  * \param _posDes               Vector for desired position
  */
 wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, ocra::ECartesianDof _axes, double _stiffness, double _damping, double _weight, Eigen::Vector3d _posDes, bool _usesYarpPorts)
+    : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), axes(_axes)
+{
+    _init(_stiffness, _damping, _weight);
+    setState(_posDes);
+}
+
+wOcraCoMTaskManager::wOcraCoMTaskManager(wOcraController& _ctrl, const wOcraModel& _model, const std::string& _taskName, ocra::ECartesianDof _axes, double _stiffness, double _damping, const Eigen::VectorXd& _weight, Eigen::Vector3d _posDes, bool _usesYarpPorts)
     : wOcraTaskManagerBase(_ctrl, _model, _taskName, _usesYarpPorts), axes(_axes)
 {
     _init(_stiffness, _damping, _weight);
@@ -67,6 +81,28 @@ wOcraCoMTaskManager::~wOcraCoMTaskManager()
  *
  */
 void wOcraCoMTaskManager::_init(double stiffness, double damping, double weight)
+{
+    featFrame = new ocra::CoMFrame(name + ".CoMFrame", model);
+    featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
+    feat = new ocra::PositionFeature(name + ".PositionFeature", *featFrame, axes);
+    featDes = new ocra::PositionFeature(name + ".PositionFeature_Des", *featDesFrame, axes);
+
+    task = &(ctrl.createwOcraTask(name, *feat, *featDes));
+    task->initAsAccelerationTask();
+    ctrl.addTask(*task);
+
+    task->setStiffness(stiffness);
+    task->setDamping(damping);
+    task->setWeight(weight);
+    task->activateAsObjective();
+
+    setStateDimension(9, 3); //3 dof for pos vel and acc
+
+    // Set the desired state to the current position of the segment with 0 vel or acc
+    setState(model.getCoMPosition());
+}
+
+void wOcraCoMTaskManager::_init(double stiffness, double damping, const Eigen::VectorXd& weight)
 {
     featFrame = new ocra::CoMFrame(name + ".CoMFrame", model);
     featDesFrame = new ocra::TargetFrame(name + ".TargetFrame", model);
@@ -133,14 +169,18 @@ void wOcraCoMTaskManager::setWeight(double weight)
     task->setWeight(weight);
 }
 
+void wOcraCoMTaskManager::setWeight(const Eigen::VectorXd& weight)
+{
+    task->setWeight(weight);
+}
+
 /** Gets the weight constant for this task
  *
  *  \return                     The weight for this task
  */
-double wOcraCoMTaskManager::getWeight()
+Eigen::VectorXd wOcraCoMTaskManager::getWeight()
 {
-    Eigen::VectorXd weights = task->getWeight();
-    return weights[0];
+    return task->getWeight();
 }
 
 /** Sets the stiffness for this task
