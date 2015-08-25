@@ -65,7 +65,7 @@ class wOcraTask: public Task
 
 public:
 
-    enum TYPETASK { UNKNOWNTASK, ACCELERATIONTASK, TORQUETASK, FORCETASK };
+    enum TYPETASK { UNKNOWNTASK, ACCELERATIONTASK, TORQUETASK, FORCETASK, COMMOMENTUMTASK };
 
 
     wOcraTask(const std::string& taskName, const Model& innerModel, const Feature& feature, const Feature& featureDes);
@@ -76,6 +76,7 @@ public:
     void initAsAccelerationTask();
     void initAsTorqueTask();
     void initAsForceTask();
+    void initAsCoMMomentumTask();
 
     TYPETASK getTaskType() const;
 
@@ -118,6 +119,7 @@ protected:
     void doUpdateAccelerationTask();
     void doUpdateTorqueTask();
     void doUpdateForceTask();
+    void doUpdateCoMMomentumTask();
 
     void checkIfConnectedToController() const;
 

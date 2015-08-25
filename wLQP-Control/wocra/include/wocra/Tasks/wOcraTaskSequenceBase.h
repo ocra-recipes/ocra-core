@@ -4,6 +4,7 @@
 // Includes the set of all possible task managers to make it easier to reference
 #include "wocra/Tasks/wOcraTaskManagerBase.h"
 #include "wocra/Tasks/Managers/wOcraCoMTaskManager.h"
+#include "wocra/Tasks/Managers/wOcraCoMMomentumTaskManager.h"
 #include "wocra/Tasks/Managers/wOcraContactTaskManager.h"
 #include "wocra/Tasks/Managers/wOcraContactSetTaskManager.h"
 #include "wocra/Tasks/Managers/wOcraFullPostureTaskManager.h"

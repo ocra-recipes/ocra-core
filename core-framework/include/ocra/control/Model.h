@@ -20,6 +20,7 @@
 #include <Eigen/Lgsm>
 
 #include <string>
+#include <iostream>
 
 namespace ocra
 {
@@ -71,8 +72,10 @@ namespace ocra
     virtual double            getMass()             const = 0;
     virtual const Eigen::Vector3d&   getCoMPosition()      const = 0;
     virtual const Eigen::Vector3d&   getCoMVelocity()      const = 0;
+    virtual const Eigen::Vector3d&   getCoMAngularVelocity()      const{ std::cout << "getCoMAngularVelocity() Not implemented" << std::endl; }
     virtual const Eigen::Vector3d&   getCoMJdotQdot()      const = 0;
     virtual const Eigen::Matrix<double,3,Eigen::Dynamic>& getCoMJacobian()      const = 0;
+    virtual const Eigen::Matrix<double,3,Eigen::Dynamic>& getCoMAngularJacobian() const{ std::cout << "getCoMAngularVelocity() Not implemented" << std::endl; }
     virtual const Eigen::Matrix<double,3,Eigen::Dynamic>& getCoMJacobianDot()   const = 0;
       //dynamic/static equation terms
     virtual const Eigen::MatrixXd&   getInertiaMatrix()            const = 0;

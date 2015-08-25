@@ -208,6 +208,11 @@ void wOcraTask::connectToController(wOcraSolver& solver, const wOcraDynamicFunct
             pimpl->setAsForceTask();
             break;
         }
+        case(COMMOMENTUMTASK):
+        {
+            pimpl->setAsAccelerationTask();
+            break;
+        }
         case(UNKNOWNTASK):
         {
             std::string errmsg = std::string("[wOcraTask::connectToController]: The task type of '") + getName() + std::string("' has not been set during creation.\nCall prior that 'initAsAccelerationTask', 'initAsTorqueTask' or 'initAsForceTask'\n"); //
@@ -265,7 +270,10 @@ void wOcraTask::initAsForceTask()
 }
 
 
-
+void wOcraTask::initAsCoMMomentumTask()
+{
+    pimpl->innerTaskType = COMMOMENTUMTASK;
+}
 
 wOcraTask::TYPETASK wOcraTask::getTaskType() const
 {
@@ -495,6 +503,11 @@ void wOcraTask::update()
             doUpdateForceTask();
             break;
         }
+        case(COMMOMENTUMTASK):
+        {
+            doUpdateCoMMomentumTask();
+            break;
+        }
         case(UNKNOWNTASK):
         {
             throw std::runtime_error(std::string("[wOcraTask::update]: The task type has not been set during creation."));
@@ -580,7 +593,28 @@ void wOcraTask::doUpdateForceTask()
 
 }
 
+void wOcraTask::doUpdateCoMMomentumTask()
+{
+    const MatrixXd& J  = pimpl->innerModel.getCoMAngularJacobian();
+    const MatrixXd& Kd = getDamping();
 
+    const VectorXd  accDes = - Kd * pimpl->innerModel.getCoMAngularVelocity();
+
+
+    if (pimpl->useReducedProblem)
+    {
+        const Eigen::MatrixXd E2 =        - J * pimpl->dynamicEquation->getInertiaMatrixInverseJchiT();
+        const Eigen::VectorXd f2 = accDes + J * pimpl->dynamicEquation->getInertiaMatrixInverseLinNonLinGrav();
+
+        pimpl->innerObjectiveFunction->changeA(E2);
+        pimpl->innerObjectiveFunction->changeb(f2);
+    }
+    else
+    {
+        pimpl->innerObjectiveFunction->changeA(J);
+        pimpl->innerObjectiveFunction->changeb(accDes);
+    }
+}
 
 
 void wOcraTask::checkIfConnectedToController() const
