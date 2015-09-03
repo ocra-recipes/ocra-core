@@ -51,7 +51,7 @@ namespace wocra
                         if( currentElem == "params" ){
                             if (taskElem->QueryDoubleAttribute("kp", &currentTmArgs.kp)==TIXML_NO_ATTRIBUTE){currentTmArgs.kp=0.0;}
                             if (taskElem->QueryDoubleAttribute("kd", &currentTmArgs.kd)==TIXML_NO_ATTRIBUTE){currentTmArgs.kd=0.0;}
-                            if (taskElem->QueryDoubleAttribute("weight", &currentTmArgs.weight)==TIXML_NO_ATTRIBUTE){currentTmArgs.weight=0.0;}
+                            if (taskElem->QueryDoubleAttribute("weight", &currentTmArgs.weight)==TIXML_NO_ATTRIBUTE){currentTmArgs.weight=0.0; currentTmArgs.useWeightVectorConstructor=false;}else{currentTmArgs.useWeightVectorConstructor=false;}
                             if (taskElem->QueryIntAttribute("axes", &currentTmArgs.axes)==TIXML_NO_ATTRIBUTE){currentTmArgs.axes=ocra::XYZ;}
                             if (taskElem->Attribute("usesYarp") != NULL){
                                 bool yarpBool;
@@ -120,6 +120,11 @@ namespace wocra
                                 currentTmArgs.desired = stringToVectorXd(desiredValueString.c_str());
                             }
 
+                        }
+
+                        else if( currentElem == "weights" ){
+                            currentTmArgs.useWeightVectorConstructor = true;
+                            currentTmArgs.weightVector = stringToVectorXd(taskElem->GetText());
                         }
 
 
@@ -257,6 +262,7 @@ namespace wocra
             std::cout << "kp: " << tmArgsVector[i].kp << std::endl;
             std::cout << "kd: " << tmArgsVector[i].kd << std::endl;
             std::cout << "weight: " << tmArgsVector[i].weight << std::endl;
+            std::cout << "weights: " << tmArgsVector[i].weightVector << std::endl;
             std::cout << "axes: " << tmArgsVector[i].axes << std::endl;
             std::cout << "offset: " << std::endl;
             for(int j=0; j<tmArgsVector[i].offset.size(); j++){std::cout << tmArgsVector[i].offset[j].transpose() << std::endl;}
@@ -337,14 +343,25 @@ namespace wocra
 
         if(argStructPtr->taskType == "wOcraCoMTaskManager")
         {
-            newTaskManager = new wOcraCoMTaskManager(ctrl, model,
-                                                    argStructPtr->taskName,
-                                                    argStructPtr->axes,//ocra::XYZ,
-                                                    argStructPtr->kp,
-                                                    argStructPtr->kd,
-                                                    argStructPtr->weight,
-                                                    argStructPtr->desired,
-                                                    argStructPtr->usesYarp);
+            if (argStructPtr->useWeightVectorConstructor) {
+                newTaskManager = new wOcraCoMTaskManager(ctrl, model,
+                                                        argStructPtr->taskName,
+                                                        argStructPtr->axes,//ocra::XYZ,
+                                                        argStructPtr->kp,
+                                                        argStructPtr->kd,
+                                                        argStructPtr->weightVector,
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);            }
+            else {
+                newTaskManager = new wOcraCoMTaskManager(ctrl, model,
+                                                        argStructPtr->taskName,
+                                                        argStructPtr->axes,//ocra::XYZ,
+                                                        argStructPtr->kp,
+                                                        argStructPtr->kd,
+                                                        argStructPtr->weight,
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);            }
+
             return newTaskManager;
         }
 
@@ -390,14 +407,27 @@ namespace wocra
                 argStructPtr->desired = Eigen::VectorXd::Constant(sizeDof, argStructPtr->desired[0]);
             }
 
-            newTaskManager = new wOcraFullPostureTaskManager(ctrl, model,
-                                                    argStructPtr->taskName,
-                                                    ocra::FullState::INTERNAL,
-                                                    argStructPtr->kp,
-                                                    argStructPtr->kd,
-                                                    argStructPtr->weight,
-                                                    argStructPtr->desired,
-                                                    argStructPtr->usesYarp);
+            if (argStructPtr->useWeightVectorConstructor) {
+                newTaskManager = new wOcraFullPostureTaskManager(ctrl, model,
+                                                        argStructPtr->taskName,
+                                                        ocra::FullState::INTERNAL,
+                                                        argStructPtr->kp,
+                                                        argStructPtr->kd,
+                                                        argStructPtr->weightVector,
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);
+            }
+            else {
+                newTaskManager = new wOcraFullPostureTaskManager(ctrl, model,
+                                                        argStructPtr->taskName,
+                                                        ocra::FullState::INTERNAL,
+                                                        argStructPtr->kp,
+                                                        argStructPtr->kd,
+                                                        argStructPtr->weight,
+                                                        argStructPtr->desired,
+                                                        argStructPtr->usesYarp);
+            }
+
 
             return newTaskManager;
         }
@@ -419,15 +449,29 @@ namespace wocra
                     argStructPtr->desired = Eigen::VectorXd::Constant(sizeJointIndexes, argStructPtr->desired[0]);
                 }
 
-                newTaskManager = new wOcraPartialPostureTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        ocra::FullState::INTERNAL,
-                                                        argStructPtr->jointIndexes,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        argStructPtr->desired,
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraPartialPostureTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            ocra::FullState::INTERNAL,
+                                                            argStructPtr->jointIndexes,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            argStructPtr->desired,
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraPartialPostureTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            ocra::FullState::INTERNAL,
+                                                            argStructPtr->jointIndexes,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            argStructPtr->desired,
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
             else
@@ -445,31 +489,60 @@ namespace wocra
 
             if (sizeDesired!=3)
             {
-                newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        argStructPtr->offset.front(),
-                                                        argStructPtr->axes,//ocra::XYZ,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->offset.front(),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->offset.front(),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
 
 
             else if(sizeDesired == 3)
             {
-                newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        argStructPtr->offset.front(),
-                                                        argStructPtr->axes,//ocra::XYZ,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        argStructPtr->desired,
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->offset.front(),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            argStructPtr->desired,
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraSegCartesianTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->offset.front(),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            argStructPtr->desired,
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
 
@@ -481,13 +554,25 @@ namespace wocra
 
             if (sizeDesired!=4)
             {
-                newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
 
@@ -499,14 +584,27 @@ namespace wocra
                 argStructPtr->desired.head(3) = argStructPtr->desired.tail(3);
                 argStructPtr->desired(3) = tmpW;
 
-                newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        Eigen::Rotation3d(argStructPtr->desired.data()),
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            Eigen::Rotation3d(argStructPtr->desired.data()),
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraSegOrientationTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            Eigen::Rotation3d(argStructPtr->desired.data()),
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
         }
@@ -516,31 +614,60 @@ namespace wocra
 
             if (sizeDesired!=7)
             {
-                newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        eigenVectorToDisplacementd(argStructPtr->offset.front()),
-                                                        argStructPtr->axes,//ocra::XYZ,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        argStructPtr->usesYarp);
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            eigenVectorToDisplacementd(argStructPtr->offset.front()),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            argStructPtr->usesYarp);
+                }
+                else {
+                    newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            eigenVectorToDisplacementd(argStructPtr->offset.front()),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            argStructPtr->usesYarp);
+                }
+
                 return newTaskManager;
             }
 
 
             else if(sizeDesired == 7)
             {
-                newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
-                                                        argStructPtr->taskName,
-                                                        argStructPtr->segment,
-                                                        eigenVectorToDisplacementd(argStructPtr->offset.front()),
-                                                        argStructPtr->axes,//ocra::XYZ,
-                                                        argStructPtr->kp,
-                                                        argStructPtr->kd,
-                                                        argStructPtr->weight,
-                                                        eigenVectorToDisplacementd(argStructPtr->desired),
-                                                        argStructPtr->usesYarp );
+                if (argStructPtr->useWeightVectorConstructor) {
+                    newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            eigenVectorToDisplacementd(argStructPtr->offset.front()),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weightVector,
+                                                            eigenVectorToDisplacementd(argStructPtr->desired),
+                                                            argStructPtr->usesYarp );
+                }
+                else {
+                    newTaskManager = new wOcraSegPoseTaskManager(ctrl, model,
+                                                            argStructPtr->taskName,
+                                                            argStructPtr->segment,
+                                                            eigenVectorToDisplacementd(argStructPtr->offset.front()),
+                                                            argStructPtr->axes,//ocra::XYZ,
+                                                            argStructPtr->kp,
+                                                            argStructPtr->kd,
+                                                            argStructPtr->weight,
+                                                            eigenVectorToDisplacementd(argStructPtr->desired),
+                                                            argStructPtr->usesYarp );
+                }
+
 
                 return newTaskManager;
             }
