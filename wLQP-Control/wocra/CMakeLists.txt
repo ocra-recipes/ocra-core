@@ -27,8 +27,12 @@ endif()
 find_package(PkgConfig REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(YARP REQUIRED)
-find_package(TinyXML REQUIRED)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${YARP_MODULE_PATH})
+find_package(TinyXML QUIET)
+IF(NOT TinyXML_FOUND)
+    message("Couldn't find TinyXML using cmake pakages. Trying with pkg-config...")
+    PKG_CHECK_MODULES(TinyXML tinyxml REQUIRED)
+ENDIF()
+
 
 
 PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)

@@ -26,6 +26,8 @@ if(NOT PC_EIGEN_FOUND)
     message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
 endif(NOT PC_EIGEN_FOUND)
 
+message("Eigen includes: " ${PC_EIGEN_INCLUDE_DIRS})
+
 
 include_directories(include)
 include_directories(include/ocra/control)
