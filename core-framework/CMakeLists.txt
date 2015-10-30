@@ -4,6 +4,7 @@ project(ocra_framework CXX)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-fpermissive")
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 if(MSVC)
     set(LIB_TYPE "STATIC")
@@ -20,13 +21,13 @@ else()
 
 endif()
 
-find_package(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)
-if(NOT PC_EIGEN_FOUND)
-    message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
-endif(NOT PC_EIGEN_FOUND)
+find_package(Eigen REQUIRED)
+find_package(EigenLgsm REQUIRED)
 
-message("Eigen includes: " ${PC_EIGEN_INCLUDE_DIRS})
+include_directories(
+    ${Eigen_INCLUDE_DIRS}
+    ${EigenLgsm_INCLUDE_DIR}
+)
 
 
 include_directories(include)

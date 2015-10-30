@@ -8,6 +8,8 @@ endif()
 set(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_CXX_FLAGS "-fpermissive")
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+
 if(MSVC)
     SET(BUILD_SHARED_LIBS OFF)
     set(suffix_type "_static")
@@ -34,11 +36,13 @@ IF(NOT TinyXML_FOUND)
 ENDIF()
 
 
+find_package(Eigen REQUIRED)
+find_package(EigenLgsm REQUIRED)
 
-PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)
-if(NOT PC_EIGEN_FOUND)
-    message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
-endif(NOT PC_EIGEN_FOUND)
+include_directories(
+    ${Eigen_INCLUDE_DIRS}
+    ${EigenLgsm_INCLUDE_DIR}
+)
 
 #set installation
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
