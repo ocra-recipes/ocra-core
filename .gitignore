@@ -2,3 +2,5 @@ build/
 *.*~
 .svn/
 tmp/
+.kdev4
+*.kdev4

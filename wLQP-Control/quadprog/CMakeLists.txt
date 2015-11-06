@@ -5,6 +5,22 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+message("
+
+
+
+
+CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}
+
+
+
+
+
+
+
+
+    ")
 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
@@ -22,12 +38,13 @@ else()
     endif()
 endif()
 
-# Check dependencies
-find_package(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)
-if(NOT PC_EIGEN_FOUND)
-    message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
-endif(NOT PC_EIGEN_FOUND)
+find_package(Eigen REQUIRED)
+find_package(EigenLgsm REQUIRED)
+
+include_directories(
+    ${Eigen_INCLUDE_DIRS}
+    ${EigenLgsm_INCLUDE_DIR}
+)
 
 #set installation
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
