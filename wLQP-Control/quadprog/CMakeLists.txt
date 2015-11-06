@@ -6,21 +6,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
-message("
-
-
-
-
-CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}
-
-
-
-
-
-
-
-
-    ")
 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
