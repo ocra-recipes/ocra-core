@@ -21,6 +21,18 @@ file(
 	*.cpp
 )
 
+
+# Check for SMLT
+find_package(SMLT)
+IF(SMLT_FOUND)
+    message("-- SMLT lib found. Compiling gaussian process trajectory.")
+    include_directories(SMLT_INCLUDE_DIRS)
+ELSE()
+    message("-- SMLT lib NOT found. Removing gaussian process trajectory from source list.")
+    list(REMOVE_ITEM source_files ${CMAKE_CURRENT_SOURCE_DIR}/src/Trajectory/wOcraGaussianProcessTrajectory.cpp)
+ENDIF()
+
+
 add_library(
 	wLQP-Control${suffix_type}
 	${LIB_TYPE}
@@ -35,6 +47,8 @@ target_link_libraries(
     ${YARP_LIBRARIES}
     ${TinyXML_LIBRARIES}
     ${Boost_LIBRARIES}
+    ${SMLT_LIBRARIES}
+
 )
 
 install(
