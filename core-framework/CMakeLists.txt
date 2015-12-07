@@ -21,10 +21,7 @@ else()
 endif()
 
 find_package(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(PC_EIGEN eigen3<=3.0.5 REQUIRED)
-if(NOT PC_EIGEN_FOUND)
-    message("Failed to detect Eigen, check PKG_CONFIG_PATH." )
-endif(NOT PC_EIGEN_FOUND)
+
 
 message("Eigen includes: " ${PC_EIGEN_INCLUDE_DIRS})
 
