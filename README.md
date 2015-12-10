@@ -1,3 +1,6 @@
+** (DEPRECATED) **
+*Please use the new and improved ocra, [ocra-recipes](https://github.com/ocra-recipes/ocra-recipes)!*
+
 ### O.C.R.A.
 #### Optimization-based Control for Robotics Applications
 
